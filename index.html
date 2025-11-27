@@ -20,84 +20,113 @@
     <style>
         body, html { height: 100%; margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
         
-        /* Map Container */
+        /* Map & Layout */
         #map-container { position: relative; height: 100%; width: 100%; }
         #map { height: 100%; width: 100%; z-index: 1; }
+        #sidebar { height: 100%; overflow-y: auto; scrollbar-width: thin; }
         
-        /* Sidebar Styling */
-        #sidebar { 
-            height: 100%; 
-            overflow-y: auto; 
-            scrollbar-width: thin; 
-        }
-        
-        /* Stylische Popups */
-        .leaflet-popup-content-wrapper {
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 0;
-            overflow: hidden;
-        }
+        /* UI Elemente Styling */
+        .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 0; overflow: hidden; }
         .leaflet-popup-content { margin: 0; width: 280px !important; }
         .leaflet-popup-tip { background: white; }
-        
-        /* Marker Styling */
-        .number-icon {
-            background-color: #ea580c; /* Orange-600 */
-            color: white;
-            border: 3px solid white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 30px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        }
-        .number-icon:hover { transform: scale(1.1); background-color: #c2410c; }
-
-        /* Standort Puls */
-        .gps-marker {
-            background-color: #3b82f6;
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: pulse-blue 2s infinite;
-        }
-        @keyframes pulse-blue {
-            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-        }
-
-        /* Routing Text verstecken */
         .leaflet-routing-container { display: none !important; }
+        
+        /* Marker & Icons */
+        .number-icon { background-color: #ea580c; color: white; border: 3px solid white; border-radius: 50%; text-align: center; line-height: 30px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.2s; }
+        .number-icon:hover { transform: scale(1.1); background-color: #c2410c; }
+        .gps-marker { background-color: #3b82f6; border: 2px solid white; border-radius: 50%; width: 16px; height: 16px; animation: pulse-blue 2s infinite; }
+        @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
 
-        /* Kachel Hover Effekt */
-        .info-tile:hover {
-            border-color: #ea580c;
-            transform: translateY(-2px);
-        }
-
-        /* Resizer Handle Styling */
+        /* Kacheln & Resizer */
+        .info-tile:hover { border-color: #ea580c; transform: translateY(-2px); }
         #resizer { transition: background-color 0.2s; }
         #resizer:hover, #resizer.resizing { background-color: #ea580c; }
 
-        /* Custom Scrollbar für Modal */
+        /* Modal Scrollbar & Typo */
         .modal-content::-webkit-scrollbar { width: 8px; }
         .modal-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         .modal-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        .modal-content::-webkit-scrollbar-thumb:hover { background: #aaa; }
-        
-        /* Typography für langen Text */
         .prose p { margin-bottom: 1rem; line-height: 1.7; color: #374151; }
         .prose h4 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: bold; color: #1f2937; }
         .prose blockquote { border-left: 4px solid #ea580c; padding-left: 1rem; font-style: italic; color: #4b5563; margin: 1.5rem 0; }
+
+        /* --- NEU: WELCOME SCREEN & TUTORIAL --- */
+        #welcome-screen {
+            position: fixed; inset: 0; z-index: 9999;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 1; transition: opacity 0.5s ease;
+        }
+        #welcome-screen.fade-out { opacity: 0; pointer-events: none; }
+
+        /* Tutorial Overlay (Dunkler Hintergrund) */
+        #tutorial-overlay {
+            position: fixed; inset: 0; z-index: 5000;
+            background: rgba(0, 0, 0, 0.7);
+            display: none; opacity: 0; transition: opacity 0.3s;
+        }
+        #tutorial-overlay.active { display: block; opacity: 1; }
+
+        /* Tutorial Highlight Klasse (Wird Elementen gegeben) */
+        .tutorial-highlight {
+            position: relative;
+            z-index: 5001 !important; /* Muss höher sein als Overlay */
+            box-shadow: 0 0 0 4px #ea580c, 0 0 40px rgba(234, 88, 12, 0.5) !important;
+            transition: all 0.3s;
+            pointer-events: none; /* Verhindert Klicks während Erklärung */
+        }
+        
+        /* Die Tutorial Text Box */
+        #tutorial-box {
+            position: fixed; z-index: 5002;
+            background: white; padding: 20px; border-radius: 12px;
+            max-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            bottom: 20%; left: 50%; transform: translateX(-50%);
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col md:flex-row h-screen w-screen overflow-hidden" id="main-container">
 
-    <!-- MODAL (Overlay für langen Text) -->
+    <!-- 1. WELCOME SCREEN -->
+    <div id="welcome-screen">
+        <div class="bg-white rounded-2xl p-8 max-w-lg w-11/12 text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-orange-600"></div>
+            <div class="mb-6 flex justify-center">
+                <div class="bg-orange-100 p-4 rounded-full">
+                    <i class="fa-solid fa-shoe-prints text-4xl text-orange-600"></i>
+                </div>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Osnabrück</h1>
+            <h2 class="text-xl text-gray-600 font-medium mb-6">Ein kolonialgeschichtlicher Rundgang</h2>
+            <p class="text-gray-500 mb-8 leading-relaxed">
+                Entdecke die unsichtbaren Spuren der Geschichte in deiner Stadt. 
+                Dieser interaktive Guide führt dich zu Orten, die globale Zusammenhänge erzählen.
+            </p>
+            <button onclick="startApp()" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transform transition hover:scale-[1.02] active:scale-95">
+                Rundgang starten
+            </button>
+            <p class="text-xs text-gray-400 mt-4">Beta Version • Projektarbeit</p>
+        </div>
+    </div>
+
+    <!-- 2. TUTORIAL OVERLAY & BOX -->
+    <div id="tutorial-overlay"></div>
+    <div id="tutorial-box" class="hidden">
+        <div class="flex justify-between items-start mb-2">
+            <h3 id="tut-title" class="font-bold text-lg text-gray-800">Titel</h3>
+            <span id="tut-step" class="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded">1/3</span>
+        </div>
+        <p id="tut-text" class="text-sm text-gray-600 mb-4 leading-relaxed">Erklärungstext hier.</p>
+        <div class="flex justify-end gap-2">
+            <button onclick="endTutorial()" class="text-xs text-gray-400 hover:text-gray-600 px-2">Überspringen</button>
+            <button onclick="nextTutorialStep()" class="bg-gray-900 hover:bg-black text-white text-xs font-bold py-2 px-4 rounded-lg">
+                Weiter <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL (Lese-Ansicht) -->
     <div id="info-modal" class="fixed inset-0 z-[2000] hidden">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
         <div class="absolute inset-4 md:inset-auto md:top-10 md:bottom-10 md:left-1/2 md:transform md:-translate-x-1/2 md:w-[700px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-[fadeIn_0.3s_ease-out]">
@@ -109,13 +138,13 @@
                 </button>
                 <div class="absolute bottom-4 left-6 right-6">
                     <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded mb-2 inline-block uppercase tracking-wider">Hintergrundwissen</span>
-                    <h2 id="modal-title" class="text-2xl md:text-3xl font-bold text-white leading-tight shadow-sm">Titel Platzhalter</h2>
+                    <h2 id="modal-title" class="text-2xl md:text-3xl font-bold text-white leading-tight shadow-sm">Titel</h2>
                 </div>
             </div>
             <div class="flex-grow overflow-y-auto p-6 md:p-10 modal-content bg-white">
                 <div id="modal-text" class="prose max-w-none text-lg"></div>
                 <div class="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center text-sm text-gray-500">
-                    <span id="modal-source">Quelle: Stadtarchiv</span>
+                    <span id="modal-source">Quelle</span>
                     <button onclick="closeModal()" class="text-orange-600 font-semibold hover:text-orange-700">Schließen</button>
                 </div>
             </div>
@@ -126,7 +155,7 @@
     <!-- HAUPTBEREICH: KARTE -->
     <div class="relative flex-grow h-1/2 md:h-full w-full md:w-auto order-1">
         
-        <!-- Header Overlay (Titel) -->
+        <!-- Header Overlay -->
         <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-[500] w-11/12 max-w-md pointer-events-none">
             <div class="bg-white/95 backdrop-blur-md px-6 py-3 rounded-2xl shadow-xl border border-gray-200 flex items-center justify-between pointer-events-auto">
                 <div class="flex items-center gap-3">
@@ -141,21 +170,19 @@
             </div>
         </div>
 
-        <!-- ROUTEN PLANER PANEL -->
-        <div class="absolute top-24 left-4 z-[500] max-w-[260px] md:max-w-[300px]">
+        <!-- ROUTEN PLANER PANEL (ID hinzugefügt für Tutorial) -->
+        <div id="routing-panel" class="absolute top-24 left-4 z-[500] max-w-[260px] md:max-w-[300px]">
             <div class="bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-lg border border-gray-200">
                 <h3 class="text-gray-800 font-bold text-sm mb-2 flex items-center gap-2">
                     <i class="fa-solid fa-route text-blue-500"></i> Anreise & Route
                 </h3>
                 <p class="text-xs text-gray-500 mb-3 leading-relaxed">Berechne den Weg von deinem Standort zum Startpunkt der Tour.</p>
-                
                 <div id="route-stats" class="hidden mb-3 bg-blue-50 p-2 rounded-lg border border-blue-100">
                     <div class="flex justify-between items-center text-xs text-blue-800 font-medium">
                         <span id="route-dist">-- km</span>
                         <span id="route-time">-- min</span>
                     </div>
                 </div>
-
                 <div class="flex flex-col gap-2">
                     <button onclick="calculateRouteToStart()" id="btn-calc-route" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2">
                         <i class="fa-solid fa-location-crosshairs"></i> Route von hier starten
@@ -167,13 +194,13 @@
             </div>
         </div>
 
-        <!-- Button: Zurück zur Straßenkarte (erscheint nur im Drohnen-Modus) -->
+        <!-- Reset View Button -->
         <button id="btn-reset-view" onclick="resetMapType()" class="hidden absolute top-24 right-4 z-[500] bg-white text-gray-800 p-3 rounded-lg shadow-lg font-bold text-xs border border-gray-300 flex items-center gap-2 hover:bg-gray-50 transition-all">
             <i class="fa-solid fa-map"></i> Karte zurücksetzen
         </button>
 
-        <!-- Controls Bottom Right -->
-        <div class="absolute bottom-8 right-4 z-[500] flex flex-col gap-3">
+        <!-- Location Button (ID hinzugefügt für Tutorial) -->
+        <div id="location-btn-wrapper" class="absolute bottom-8 right-4 z-[500] flex flex-col gap-3">
             <button onclick="locateUser()" class="bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110" title="Mein Standort">
                 <i class="fa-solid fa-location-arrow text-lg"></i>
             </button>
@@ -182,10 +209,10 @@
         <div id="map"></div>
     </div>
 
-    <!-- RESIZER HANDLE -->
+    <!-- RESIZER -->
     <div id="resizer" class="hidden md:block w-1.5 h-full bg-gray-300 cursor-col-resize z-30 flex-shrink-0 order-2 hover:w-2 transition-all"></div>
 
-    <!-- SEITENLEISTE -->
+    <!-- SEITENLEISTE (ID für Tutorial genutzt) -->
     <aside id="sidebar" class="w-full md:w-[320px] bg-white border-l border-gray-200 z-20 flex-shrink-0 order-3 shadow-xl flex flex-col" style="min-width: 250px; max-width: 800px;">
         <div class="p-6 bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
             <h2 class="text-xl font-bold text-gray-800">Stationen</h2>
@@ -201,12 +228,102 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
-
-    <!-- Leaflet Routing Machine JS -->
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <script>
-        // --- 1. DATEN: Museumsquartier & Schlossgarten ---
+        // --- TUTORIAL LOGIK ---
+        
+        const tutorialSteps = [
+            {
+                target: 'sidebar',
+                title: "Die Stationen",
+                text: "Hier rechts (oder unten auf dem Handy) findest du alle Stationen des Rundgangs. Klicke auf eine Karte, um mehr zu erfahren oder die Geschichte zu lesen."
+            },
+            {
+                target: 'resizer',
+                title: "Ansicht anpassen",
+                text: "Du kannst diese graue Leiste mit der Maus greifen und verschieben, um die Karte größer oder kleiner zu machen – ganz wie du es brauchst."
+            },
+            {
+                target: 'routing-panel',
+                title: "Anreise planen",
+                text: "Bist du noch nicht am Startpunkt? Hier kannst du deinen aktuellen Standort nutzen, um dich zum Museumsquartier navigieren zu lassen."
+            },
+            {
+                target: 'location-btn-wrapper',
+                title: "Orientierung",
+                text: "Verloren gegangen? Mit diesem Button springt die Karte immer zurück zu deiner aktuellen GPS-Position."
+            }
+        ];
+
+        let currentStepIndex = 0;
+
+        function startApp() {
+            // Welcome Screen ausblenden
+            const welcome = document.getElementById('welcome-screen');
+            welcome.classList.add('fade-out');
+            setTimeout(() => {
+                welcome.style.display = 'none';
+                // Tutorial starten (kurze Verzögerung für den Effekt)
+                setTimeout(startTutorial, 500);
+            }, 500);
+        }
+
+        function startTutorial() {
+            document.getElementById('tutorial-overlay').classList.add('active');
+            document.getElementById('tutorial-box').classList.remove('hidden');
+            showStep(0);
+        }
+
+        function showStep(index) {
+            // Alten Highlight entfernen
+            document.querySelectorAll('.tutorial-highlight').forEach(el => {
+                el.classList.remove('tutorial-highlight');
+            });
+
+            if (index >= tutorialSteps.length) {
+                endTutorial();
+                return;
+            }
+
+            const step = tutorialSteps[index];
+            const targetEl = document.getElementById(step.target);
+
+            // Highlight setzen
+            if (targetEl) targetEl.classList.add('tutorial-highlight');
+
+            // Text setzen
+            document.getElementById('tut-title').innerText = step.title;
+            document.getElementById('tut-text').innerText = step.text;
+            document.getElementById('tut-step').innerText = `${index + 1}/${tutorialSteps.length}`;
+            
+            // Button Text anpassen beim letzten Schritt
+            const nextBtn = document.querySelector('#tutorial-box button:last-child');
+            if (index === tutorialSteps.length - 1) {
+                nextBtn.innerHTML = 'Fertig <i class="fa-solid fa-check ml-1"></i>';
+            } else {
+                nextBtn.innerHTML = 'Weiter <i class="fa-solid fa-arrow-right ml-1"></i>';
+            }
+
+            currentStepIndex = index;
+        }
+
+        function nextTutorialStep() {
+            showStep(currentStepIndex + 1);
+        }
+
+        function endTutorial() {
+            // Aufräumen
+            document.querySelectorAll('.tutorial-highlight').forEach(el => {
+                el.classList.remove('tutorial-highlight');
+            });
+            document.getElementById('tutorial-overlay').classList.remove('active');
+            document.getElementById('tutorial-box').classList.add('hidden');
+        }
+
+
+        // --- VORHANDENE APP LOGIK (Daten etc.) ---
+        
         const tourStops = [
             {
                 title: "Museumsquartier (Stadtgeschichtliches Museum)",
@@ -219,7 +336,6 @@
                     <p>Das Stadtgeschichtliche Museum (Kulturgeschichtliches Museum) bewahrt nicht nur lokale Artefakte, sondern auch Objekte, die durch globale Handelsbeziehungen nach Osnabrück gelangten.</p>
                     <p>Museen sind heute wichtige Orte der Aufarbeitung: Wie sind Objekte in die Sammlung gekommen? Welche kolonialen Machtstrukturen spielten eine Rolle? Hier beginnt die Spurensuche nach dem kolonialen Erbe der Stadt.</p>
                 `,
-                // PLATZHALTER BILD
                 img: "https://placehold.co/600x400?text=Bild+Platzhalter",
                 source: "Bildquelle: Name des Urhebers",
                 link: "https://www.museumsquartier-osnabrueck.de/"
@@ -240,29 +356,17 @@
                     <h4>Der Standort</h4>
                     <p>Sie stehen direkt auf der südlichen Terrasse des Schlosses. Ein kritischer Blick auf diese Kunstwerke ist essenziell für das Verständnis lokaler Kolonialgeschichte.</p>
                 `,
-                // PLATZHALTER BILD
                 img: "https://placehold.co/600x400?text=Bild+Platzhalter",
                 source: "Bildquelle: Name des Urhebers",
                 link: null 
             }
         ];
 
-        // --- 2. Karte initialisieren ---
-        // Zentriere die Karte auf den neuen Startpunkt
         const map = L.map('map', { zoomControl: false }).setView([52.2742, 8.0435], 15);
-
-        const osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19, attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri'
-        });
-
-        // Layer-Control speichern, um später programmatisch zuzugreifen
+        const osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+        const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri' });
         const layerControl = L.control.layers({ "Karte": osmLayer, "Satellit": satLayer }, null, { position: 'topright' }).addTo(map);
 
-        // --- HELPER FUNKTION: Drone View (Satelliten-Zoom) ---
         window.activateDroneView = function(lat, lng) {
             map.removeLayer(osmLayer);
             map.addLayer(satLayer);
@@ -277,26 +381,14 @@
             document.getElementById('btn-reset-view').classList.add('hidden');
         }
 
-
-        // --- 3. Marker & Kacheln generieren ---
         const markers = [];
         const originalWaypoints = [];
         const tileContainer = document.getElementById('tile-container');
 
         tourStops.forEach((stop, index) => {
             originalWaypoints.push(L.latLng(stop.lat, stop.lng));
-
-            const numberIcon = L.divIcon({
-                className: 'bg-transparent',
-                html: `<div class="number-icon">${index + 1}</div>`,
-                iconSize: [34, 34],
-                iconAnchor: [17, 17],
-                popupAnchor: [0, -20]
-            });
-
+            const numberIcon = L.divIcon({ className: 'bg-transparent', html: `<div class="number-icon">${index + 1}</div>`, iconSize: [34, 34], iconAnchor: [17, 17], popupAnchor: [0, -20] });
             const marker = L.marker([stop.lat, stop.lng], { icon: numberIcon }).addTo(map);
-
-            // Popup
             const popupContent = `
                 <div class="flex flex-col">
                     <div class="h-32 w-full bg-gray-200 overflow-hidden relative">
@@ -321,10 +413,8 @@
             marker.bindPopup(popupContent);
             markers.push(marker);
 
-            // Sidebar
             const tile = document.createElement('div');
             tile.className = 'info-tile bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-all duration-300 cursor-pointer group';
-            
             let linksHtml = '';
             if(stop.link) {
                  linksHtml += `<a href="${stop.link}" onclick="event.stopPropagation()" target="_blank" class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium py-2 px-3 rounded-lg transition-colors">
@@ -343,7 +433,6 @@
                     <div class="p-5">
                         <h3 class="font-bold text-gray-900 text-lg mb-2">${stop.title}</h3>
                         <p class="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">${stop.desc}</p>
-                        
                         <div class="flex flex-col gap-2 pt-2 border-t border-gray-100">
                             <button onclick="event.stopPropagation(); openModal(${index})" class="w-full bg-gray-900 hover:bg-black text-white py-2.5 px-4 rounded-lg text-sm font-semibold transition-all shadow-md flex items-center justify-center gap-2 group-hover:shadow-lg">
                                 <i class="fa-solid fa-book-open"></i> Geschichte lesen
@@ -365,8 +454,6 @@
             tileContainer.appendChild(tile);
         });
 
-        // --- 4. Routing Initialisierung ---
-        // Wir übergeben ALLE Wegpunkte, damit die Linie gezeichnet wird
         let routingControl = L.Routing.control({
             waypoints: originalWaypoints,
             routeWhileDragging: false,
@@ -388,7 +475,6 @@
             document.getElementById('route-time').innerText = "~" + timeMin + " min";
         });
 
-        // --- 5. ROUTEN FUNKTIONEN ---
         window.calculateRouteToStart = function() {
             const btn = document.getElementById('btn-calc-route');
             const originalText = btn.innerHTML;
@@ -405,39 +491,26 @@
             navigator.geolocation.getCurrentPosition(position => {
                 const userLat = position.coords.latitude;
                 const userLng = position.coords.longitude;
-                
-                // Route: User -> Station 1 -> Station 2 ...
-                const newWaypoints = [
-                    L.latLng(userLat, userLng),
-                    ...originalWaypoints
-                ];
-                
+                const newWaypoints = [L.latLng(userLat, userLng), ...originalWaypoints];
                 routingControl.setWaypoints(newWaypoints);
                 
-                if (userMarker) map.removeLayer(userMarker);
-                const gpsIcon = L.divIcon({
-                    className: 'gps-wrapper',
-                    html: '<div class="gps-marker"></div>',
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
-                });
-                userMarker = L.marker([userLat, userLng], {icon: gpsIcon}).addTo(map);
+                if (window.userMarker) map.removeLayer(window.userMarker);
+                const gpsIcon = L.divIcon({ className: 'gps-wrapper', html: '<div class="gps-marker"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
+                window.userMarker = L.marker([userLat, userLng], {icon: gpsIcon}).addTo(map);
                 map.flyTo([userLat, userLng], 15);
 
                 btn.classList.add('hidden');
                 document.getElementById('btn-reset-route').classList.remove('hidden');
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-
             }, error => {
-                alert("Standortzugriff verweigert oder Fehler: " + error.message);
+                alert("Standortzugriff verweigert.");
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             });
         }
 
         window.resetRoute = function() {
-            // Zurück zur Standard-Route
             routingControl.setWaypoints(originalWaypoints);
             document.getElementById('btn-calc-route').classList.remove('hidden');
             document.getElementById('btn-reset-route').classList.add('hidden');
@@ -445,7 +518,6 @@
             map.flyTo(originalWaypoints[0], 16);
         }
 
-        // --- Standard Logic ---
         const modal = document.getElementById('info-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalText = document.getElementById('modal-text');
@@ -461,9 +533,7 @@
             modal.classList.remove('hidden');
         }
 
-        window.closeModal = function() {
-            modal.classList.add('hidden');
-        }
+        window.closeModal = function() { modal.classList.add('hidden'); }
 
         const resizer = document.getElementById('resizer');
         const sidebar = document.getElementById('sidebar');
@@ -493,20 +563,17 @@
             document.removeEventListener('mouseup', handleMouseUp);
         }
 
-        let userMarker = null;
+        window.userMarker = null;
         window.locateUser = function() {
             if (!navigator.geolocation) { alert("Geolocation nicht verfügbar"); return; }
-            const btnIcon = document.querySelector('.fa-location-arrow');
-            btnIcon.classList.add('fa-spin');
             navigator.geolocation.getCurrentPosition((pos) => {
                 const lat = pos.coords.latitude;
                 const lng = pos.coords.longitude;
-                if (userMarker) map.removeLayer(userMarker);
+                if (window.userMarker) map.removeLayer(window.userMarker);
                 const gpsIcon = L.divIcon({ className: 'gps-wrapper', html: '<div class="gps-marker"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
-                userMarker = L.marker([lat, lng], {icon: gpsIcon}).addTo(map);
+                window.userMarker = L.marker([lat, lng], {icon: gpsIcon}).addTo(map);
                 map.flyTo([lat, lng], 16);
-                btnIcon.classList.remove('fa-spin');
-            }, (err) => { alert("Fehler: " + err.message); btnIcon.classList.remove('fa-spin'); });
+            }, (err) => { alert("Fehler: " + err.message); });
         }
     </script>
 </body>
