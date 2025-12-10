@@ -206,6 +206,8 @@
                 <div id="modal-text" class="prose max-w-none text-lg"></div>
                 <div class="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center text-sm text-gray-500">
                     <span id="modal-source">Quelle</span>
+                    <!-- Hinzugefügter Platzhalter für den externen Link im Modal-Footer -->
+                    <a id="modal-external-link" href="#" target="_blank" class="hidden text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-1"></a>
                     <button onclick="closeModal()" class="text-orange-600 font-semibold hover:text-orange-700">Schließen</button>
                 </div>
             </div>
@@ -427,8 +429,8 @@
         const tourStops = [
             {
                 title: "Museumsquartier (Stadtgeschichtliches Museum)",
-                lat: 52.2742,
-                lng: 8.0435,
+                lat: 52.2751048,
+                lng: 8.0380043,
                 desc: "Startpunkt des Rundgangs. Das Museumsquartier vereint Kunst und Geschichte. Auch hier finden sich Spuren globaler Verflechtungen.",
                 longText: `
                     <p>Willkommen am Startpunkt des Rundgangs: dem Museumsquartier Osnabrück.</p>
@@ -458,6 +460,51 @@
                 `,
                 img: "https://placehold.co/600x400?text=Bild+Platzhalter",
                 source: "Bildquelle: Name des Urhebers",
+                link: null 
+            },
+            // STATION 3: Marienkirche
+            {
+                title: "Marienkirche: Die Taufkirche von Christian Schepeler",
+                // Koordinaten der Marienkirche (Rathausplatz)
+                lat: 52.2783, 
+                lng: 8.0475,
+                desc: "Die Kirche, in der Christian Schepeler (geb. 1827) getauft wurde. Sein Lebensweg führte ihn in die Dienste kolonialer Mächte in Westafrika.",
+                longText: `
+                    <p>Die Marienkirche ist ein zentraler Ort in der Osnabrücker Altstadt. Am 27. April 1827 wurde hier Christian Schepeler getauft.</p>
+                    <h4>Eine lokale Geschichte mit globaler Auswirkung</h4>
+                    <p>Schepeler entstammte einer angesehenen Osnabrücker Familie. Sein Lebensweg ist ein Beispiel dafür, wie eng die Provinzstadt Osnabrück im 19. Jahrhundert mit dem globalen Kolonialismus verbunden war.</p>
+                    <p>Er trat in die Dienste der niederländischen Kolonialmacht und diente ab 1856 als Soldat in Westafrika, im heutigen Ghana. Er war maßgeblich an der Unterdrückung von Aufständen beteiligt und spielte eine Rolle in der gewaltsamen Expansion der europäischen Kontrolle. Sein Schicksal und seine Taten sind ein dunkles Kapitel, das in der lokalen Erinnerung oft ausgeblendet wird.</p>
+                    <blockquote>
+                    "Die Marienkirche ist so gesehen nicht nur ein Ort der Frömmigkeit, sondern auch ein Ausgangspunkt einer Geschichte, die von Osnabrück bis an die Goldküste reicht."
+                    </blockquote>
+                    <p>Für eine tiefere Recherche zu Christian Schepelers Rolle und Lebensweg folge dem Link.</p>
+                `,
+                img: "https://placehold.co/600x400?text=Marienkirche+Osnabrueck",
+                source: "Bildquelle: OpenStreetMap",
+                // Platzhalter-Link für die externe App
+                link: "https://www.hier-kommt-der-link-zu-schepelers-app.de/" 
+            },
+            // NEUE STATION 4: Marktplatz
+            {
+                title: "True Born Osnabrughs: Kolonialer Handel und Leinen",
+                // Koordinaten des Osnabrücker Marktplatzes/Rathauses
+                lat: 52.2785, 
+                lng: 8.0478,
+                desc: "Der Marktplatz, das historische Handelszentrum Osnabrücks, ist untrennbar mit dem Leinenhandel und den Profiten aus dem kolonialen System verbunden.",
+                longText: `
+                    <p>Osnabrücker Leinen ("True Born Osnabrughs") war vom 17. bis ins 19. Jahrhundert ein global gefragtes Handelsgut. Am Markt wurde dieser Reichtum generiert.</p>
+                    <h4>Das Osnabrücker Leinen und die Versklavung</h4>
+                    <p>Das hier gehandelte Leinen fand seinen Weg über norddeutsche Häfen nach Westafrika, in die Karibik und nach Nordamerika. Ein großer Teil dieses Leinens wurde im sogenannten atlantischen Dreieckshandel direkt oder indirekt gegen versklavte Menschen getauscht.</p>
+                    <p>Das Tuch diente als Tauschmittel ("Warenfetisch") für den Kauf von Sklaven, die auf den Plantagen Baumwolle und Zucker produzierten. Ohne diesen globalen, auf Versklavung basierenden Markt wäre das Osnabrücker Leinen nicht zu solchem Reichtum gelangt.</p>
+                    <h4>Das Leggesiegel</h4>
+                    <p>Um die hohe Qualität und den echten Osnabrücker Ursprung zu garantieren, wurde das Leinen mit dem sogenannten Leggesiegel versehen. Dieses Siegel symbolisiert nicht nur handwerkliche Präzision, sondern auch die Verlässlichkeit des Produkts im globalen, kolonialen Handelssystem.</p>
+                    <blockquote>
+                    "Der Prunk und Reichtum der historischen Gebäude rund um den Marktplatz, insbesondere des Rathauses, zeugen auch von den enormen Profiten, die aus diesem globalen Handelsnetzwerk, das auf kolonialer Ausbeutung beruhte, gezogen wurden."
+                    </blockquote>
+                    <p>Osnabrück war ein Profitakteur des kolonialen Systems, nicht nur dessen Opfer.</p>
+                `,
+                img: "https://placehold.co/600x400?text=Marktplatz+Osnabrueck",
+                source: "Bildquelle: Stadtarchiv Osnabrück",
                 link: null 
             }
         ];
@@ -523,6 +570,18 @@
             
             const marker = L.marker([stop.lat, stop.lng], { icon: icon }).addTo(map);
             
+            let popupLinks = `
+                <button onclick="openModal(${index})" class="flex-1 bg-gray-800 hover:bg-black text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">
+                    <i class="fa-solid fa-book-open mr-1"></i> Lesen
+                </button>
+            `;
+            // NEU: Zusätzlicher Link im Popup, falls vorhanden
+            if(stop.link) {
+                 popupLinks += `<a href="${stop.link}" target="_blank" class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium py-1.5 px-3 rounded-lg transition-colors">
+                                    <i class="fa-solid fa-external-link-alt mr-1"></i> Extern
+                                </a>`;
+            }
+
             const popupContent = `
                 <div class="flex flex-col">
                     <div class="h-32 w-full bg-gray-200 overflow-hidden relative">
@@ -534,9 +593,7 @@
                     <div class="p-4 bg-white">
                         <h3 class="font-bold text-gray-800 text-lg mb-2 leading-tight">${stop.title}</h3>
                         <div class="flex gap-2">
-                            <button onclick="openModal(${index})" class="flex-1 bg-gray-800 hover:bg-black text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">
-                                <i class="fa-solid fa-book-open mr-1"></i> Lesen
-                            </button>
+                            ${popupLinks}
                             <button onclick="activateDroneView(${stop.lat}, ${stop.lng})" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shadow-sm" title="Satelliten-Zoom">
                                 <i class="fa-solid fa-earth-europe"></i>
                             </button>
@@ -556,11 +613,12 @@
             const tile = document.createElement('div');
             // Ästhetische und Größen-Anpassungen (shadow-lg, p-6, h-48)
             tile.className = 'info-tile bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden transition-all duration-300 cursor-pointer group hover:shadow-xl';
+            
             let linksHtml = '';
             if(stop.link) {
-                 // Website Button mit subtilerem Grau
+                 // Externer Link Button mit Akzentfarbe Grau
                  linksHtml += `<a href="${stop.link}" onclick="event.stopPropagation()" target="_blank" class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium py-2 px-3 rounded-lg transition-colors">
-                                    <i class="fa-solid fa-globe mr-1"></i> Webseite
+                                    <i class="fa-solid fa-external-link-alt mr-1"></i> Externe App
                                 </a>`;
             }
 
@@ -697,6 +755,8 @@
         const modalText = document.getElementById('modal-text');
         const modalImg = document.getElementById('modal-img');
         const modalSource = document.getElementById('modal-source');
+        const modalExternalLinkAnchor = document.getElementById('modal-external-link');
+
 
         window.openModal = function(index) {
             const data = tourStops[index];
@@ -704,10 +764,24 @@
             modalText.innerHTML = data.longText;
             modalImg.src = data.img;
             modalSource.innerText = data.source || "Keine Angabe";
+            
+            // Logik für den externen Link im Modal-Footer
+            if (data.link) {
+                modalExternalLinkAnchor.href = data.link;
+                modalExternalLinkAnchor.classList.remove('hidden');
+                modalExternalLinkAnchor.innerHTML = `<i class="fa-solid fa-external-link-alt text-sm"></i> Mehr erfahren`;
+            } else {
+                 modalExternalLinkAnchor.classList.add('hidden');
+            }
+            
             modal.classList.remove('hidden');
         }
 
-        window.closeModal = function() { modal.classList.add('hidden'); }
+        window.closeModal = function() { 
+            // Link im Modal-Footer verbergen, um es für die nächste Station sauber zu halten
+            modalExternalLinkAnchor.classList.add('hidden');
+            modal.classList.add('hidden'); 
+        }
 
         const resizer = document.getElementById('resizer');
         const sidebar = document.getElementById('sidebar');
