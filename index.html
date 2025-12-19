@@ -51,7 +51,6 @@
             border: 1px solid var(--accent-gold);
         }
 
-        /* Sidebar Glassmorphism */
         .sidebar {
             transition: transform 0.3s ease-in-out;
             z-index: 1000;
@@ -62,17 +61,22 @@
             background: rgba(166, 124, 0, 0.05);
         }
 
-        /* Verstecke Routing-Instruktionen standardmäßig auf Mobile */
-        .leaflet-routing-container {
-            display: none;
+        .leaflet-control-layers {
+            border-radius: 8px !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
         }
-        
-        .active-route .leaflet-routing-container {
-            display: block;
-            max-height: 200px;
-            overflow-y: auto;
-            background: white !important;
-            font-size: 12px;
+
+        /* Verstecke Standard-Routing-Anweisungen */
+        .leaflet-routing-container {
+            display: none !important;
+        }
+
+        /* Navigator Panel Styling */
+        #navigator-panel {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
         }
     </style>
 </head>
@@ -95,28 +99,22 @@
             <div class="p-6">
                 <div id="intro-view">
                     <h2 class="text-2xl mb-4 border-b border-gray-200 pb-2">Stationen der Tour</h2>
-                    <p class="text-sm text-gray-600 mb-6">Wählen Sie einen Ort auf der Karte oder aus der Liste, um mehr über die kolonialen Verflechtungen Osnabrücks zu erfahren.</p>
-                    
-                    <div id="station-list" class="space-y-4">
-                        <!-- Stationen werden dynamisch geladen -->
-                    </div>
+                    <p class="text-sm text-gray-600 mb-6">Entdecken Sie die kolonialen Verflechtungen Osnabrücks vor Ort.</p>
+                    <div id="station-list" class="space-y-4"></div>
                 </div>
 
-                <!-- Detail View (Hidden by default) -->
                 <div id="detail-view" class="hidden">
                     <button id="backToList" class="text-sm text-accent-gold flex items-center mb-4 hover:underline">
                         <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Zurück zur Übersicht
                     </button>
                     <h2 id="detail-title" class="text-2xl mb-2"></h2>
-                    <div id="detail-image" class="w-full h-48 bg-gray-200 rounded mb-4 overflow-hidden flex items-center justify-center italic text-gray-500 text-sm">
+                    <div id="detail-image" class="w-full h-48 bg-gray-200 rounded mb-4 flex items-center justify-center italic text-gray-400 text-sm border">
                         [Bildplatzhalter: Historische Ansicht]
                     </div>
-                    <div id="detail-content" class="text-sm leading-relaxed text-gray-700 space-y-4">
-                        <!-- Inhalt -->
-                    </div>
-                    <div class="mt-8 pt-4 border-t border-gray-200">
+                    <div id="detail-content" class="text-sm leading-relaxed text-gray-700 space-y-4"></div>
+                    <div class="mt-8 pt-4 border-t">
                         <button id="startNavigation" class="w-full bg-[#2d3436] text-white py-3 rounded-lg flex justify-center items-center hover:bg-black transition">
-                            <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 7 9 5 9-5V5l-9 5-9-5v2Z"/><path d="M21 7v10l-9 5-9-5V7l9 5 9-5Z"/></svg>
+                            <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
                             Wegbeschreibung starten
                         </button>
                     </div>
@@ -124,82 +122,72 @@
             </div>
         </aside>
 
-        <!-- Map Container -->
+        <!-- Map -->
         <div id="map"></div>
 
-        <!-- GPS Button Overlay -->
-        <button id="locateMe" class="absolute bottom-8 right-8 z-[1000] bg-white p-4 rounded-full shadow-2xl border border-gray-200 hover:bg-gray-50 active:scale-95 transition-transform">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a67c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line></svg>
-        </button>
+        <!-- Navigator Overlay (Bottom Right) -->
+        <div id="navigator-panel" class="absolute bottom-6 right-6 z-[1000] flex flex-col items-end gap-3 pointer-events-none">
+            
+            <!-- GPS Status / Info Card -->
+            <div id="nav-info-card" class="bg-white/95 p-4 rounded-xl border border-gray-200 w-64 md:w-72 pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-accent-gold font-bold">Nächste Station</span>
+                    <span id="nav-dist" class="text-xs font-mono bg-gray-100 px-2 py-1 rounded">-- m</span>
+                </div>
+                <h4 id="nav-next-title" class="text-sm font-bold truncate">Standort aktivieren...</h4>
+                
+                <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-gray-100">
+                    <div>
+                        <p class="text-[9px] text-gray-400 uppercase">Gehzeit ca.</p>
+                        <p id="nav-time" class="text-sm font-semibold">-- Min.</p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] text-gray-400 uppercase">Tour Gesamt</p>
+                        <p id="nav-total" class="text-sm font-semibold">~ 45 Min.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main GPS Action Button -->
+            <button id="locateMe" class="bg-white p-4 rounded-full shadow-lg border border-gray-100 hover:bg-gray-50 active:scale-90 transition-all pointer-events-auto">
+                <svg id="gps-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a67c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line></svg>
+            </button>
+        </div>
     </main>
 
-    <!-- UI Overlay for Notifications -->
-    <div id="toast" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm opacity-0 transition-opacity z-[2000] pointer-events-none">
+    <div id="toast" class="fixed bottom-32 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-2 rounded-full text-xs opacity-0 transition-opacity z-[2000] pointer-events-none shadow-2xl">
         Standort wird abgerufen...
     </div>
 
     <script>
-        // --- DATEN DER STATIONEN ---
         const stations = [
-            {
-                id: 1,
-                title: "Marktplatz & Rathaus",
-                coords: [52.2776, 8.0411],
-                short: "Zentrum des Westfälischen Friedens und Handelswege.",
-                content: "<p>Das Rathaus des Westfälischen Friedens ist nicht nur ein Symbol der Diplomatie. Als Handelsstadt profitierte Osnabrück indirekt von kolonialen Warenströmen, die über die Hanse und später norddeutsche Häfen flossen.</p><p>Historische Akten belegen, dass auch Osnabrücker Kaufleute in den Überseehandel investierten, was zum Wohlstand der Stadt im 18. und 19. Jahrhundert beitrug.</p>"
-            },
-            {
-                id: 2,
-                title: "Bucksturm & Mahnmal",
-                coords: [52.2745, 8.0385],
-                short: "Ehemaliger Wehrturm mit Blick auf Gedenkkultur.",
-                content: "<p>In der Nähe des Bucksturms finden sich Spuren der Auseinandersetzung mit der deutschen Kolonialvergangenheit. Oft wurden Denkmäler für 'Kolonialhelden' erst spät hinterfragt.</p><p>Dieser Ort dient heute als Reflexionspunkt für die Verbindung zwischen lokalem Militarismus und imperialen Bestrebungen des Kaiserreichs.</p>"
-            },
-            {
-                id: 3,
-                title: "Ledenhof",
-                coords: [52.2725, 8.0445],
-                short: "Adelssitz mit Verbindungen zur Überseewirtschaft.",
-                content: "<p>Der Ledenhof, ein ehemaliger mittelalterlicher Stadthof, repräsentiert die Oberschicht Osnabrücks. Viele dieser Familien waren Akteure in globalen Netzwerken, die Kolonialwaren wie Tabak, Zucker und Kaffee nach Westfalen brachten.</p>"
-            }
+            { id: 1, title: "Marktplatz & Rathaus", coords: [52.2776, 8.0411], short: "Handel und Diplomatie.", content: "<p>Das Rathaus ist Symbol der globalen Vernetzung Osnabrücks durch den Westfälischen Frieden.</p>" },
+            { id: 2, title: "Bucksturm", coords: [52.2745, 8.0385], short: "Militarismus & Kolonialismus.", content: "<p>Historischer Reflexionspunkt über koloniale Denkmalkultur.</p>" },
+            { id: 3, title: "Ledenhof", coords: [52.2725, 8.0445], short: "Globaler Warenimport.", content: "<p>Sitz wohlhabender Familien, die mit Kolonialwaren handelten.</p>" }
         ];
 
-        // --- MAP INITIALISIERUNG ---
-        const map = L.map('map', {
-            zoomControl: false
-        }).setView([52.277, 8.042], 15);
+        // Layer-Setup
+        const lightLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri' });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        }).addTo(map);
-
+        const map = L.map('map', { zoomControl: false, layers: [lightLayer] }).setView([52.277, 8.042], 15);
+        L.control.layers({ "Archiv": lightLayer, "Satellit": satelliteLayer }, null, { position: 'topright' }).addTo(map);
         L.control.zoom({ position: 'topright' }).addTo(map);
 
         let userLocation = null;
         let routingControl = null;
         let userMarker = null;
 
-        // --- FUNKTIONEN ---
-
         function initApp() {
             const listContainer = document.getElementById('station-list');
-            
             stations.forEach(station => {
-                // Marker hinzufügen
                 const marker = L.marker(station.coords).addTo(map);
-                marker.bindPopup(`<div class="font-semibold">${station.title}</div><button onclick="showDetail(${station.id})" class="text-accent-gold text-xs underline">Details ansehen</button>`, { className: 'custom-popup' });
+                marker.bindPopup(`<div class="font-bold">${station.title}</div><button onclick="showDetail(${station.id})" class="text-accent-gold text-xs underline mt-1">Details</button>`, { className: 'custom-popup' });
 
-                // Liste generieren
                 const card = document.createElement('div');
-                card.className = 'station-card p-4 bg-white border border-gray-100 rounded shadow-sm cursor-pointer transition';
-                card.innerHTML = `
-                    <h3 class="font-semibold text-lg">${station.title}</h3>
-                    <p class="text-xs text-gray-500">${station.short}</p>
-                `;
-                card.onclick = () => {
-                    showDetail(station.id);
-                    map.flyTo(station.coords, 17);
-                };
+                card.className = 'station-card p-4 bg-white border border-gray-100 rounded shadow-sm cursor-pointer';
+                card.innerHTML = `<h3 class="font-bold">${station.title}</h3><p class="text-[11px] text-gray-400">${station.short}</p>`;
+                card.onclick = () => { showDetail(station.id); map.flyTo(station.coords, 17); };
                 listContainer.appendChild(card);
             });
         }
@@ -208,111 +196,90 @@
             const station = stations.find(s => s.id === id);
             document.getElementById('intro-view').classList.add('hidden');
             document.getElementById('detail-view').classList.remove('hidden');
-            
             document.getElementById('detail-title').innerText = station.title;
             document.getElementById('detail-content').innerHTML = station.content;
-
-            // Navigation Button Setup
-            document.getElementById('startNavigation').onclick = () => {
-                startRoute(station.coords);
-            };
-
-            // Sidebar auf Mobile nach Klick einklappen (optional)
-            if (window.innerWidth < 768) {
-                // toggleSidebarVisibility(); // Falls gewünscht
-            }
+            document.getElementById('startNavigation').onclick = () => startRoute(station.coords);
         }
 
         function showToast(text) {
             const toast = document.getElementById('toast');
-            toast.innerText = text;
-            toast.style.opacity = '1';
+            toast.innerText = text; toast.style.opacity = '1';
             setTimeout(() => { toast.style.opacity = '0'; }, 3000);
         }
 
-        // --- NAVIGATION & GPS ---
+        // --- NAVIGATOR LOGIK ---
+
+        function updateNavigator() {
+            if (!userLocation) return;
+
+            // Zeige Card
+            const card = document.getElementById('nav-info-card');
+            card.classList.remove('opacity-0', 'translate-y-2');
+
+            // Finde die nächste Station (Luftlinie)
+            let nearest = null;
+            let minDist = Infinity;
+
+            stations.forEach(s => {
+                const dist = L.latLng(userLocation.lat, userLocation.lng).distanceTo(L.latLng(s.coords[0], s.coords[1]));
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearest = s;
+                }
+            });
+
+            if (nearest) {
+                document.getElementById('nav-next-title').innerText = nearest.title;
+                
+                // Distanz Formatierung
+                const distText = minDist > 1000 ? (minDist/1000).toFixed(1) + " km" : Math.round(minDist) + " m";
+                document.getElementById('nav-dist').innerText = distText;
+
+                // Zeitberechnung (ca. 80m pro Minute)
+                const minutes = Math.ceil(minDist / 80);
+                document.getElementById('nav-time').innerText = minutes + " Min.";
+            }
+        }
 
         function startRoute(destCoords) {
             if (!userLocation) {
-                showToast("Bitte aktivieren Sie erst Ihren Standort (Button unten rechts).");
+                showToast("Bitte erst GPS aktivieren.");
                 return;
             }
-
-            if (routingControl) {
-                map.removeControl(routingControl);
-            }
-
+            if (routingControl) map.removeControl(routingControl);
             routingControl = L.Routing.control({
-                waypoints: [
-                    L.latLng(userLocation.lat, userLocation.lng),
-                    L.latLng(destCoords[0], destCoords[1])
-                ],
-                routeWhileDragging: true,
+                waypoints: [L.latLng(userLocation.lat, userLocation.lng), L.latLng(destCoords[0], destCoords[1])],
+                createMarker: () => null,
                 language: 'de',
-                createMarker: function() { return null; }, // Verhindert doppelte Marker
-                lineOptions: {
-                    styles: [{ color: '#a67c00', opacity: 0.8, weight: 6 }]
-                }
+                lineOptions: { styles: [{ color: '#a67c00', opacity: 0.8, weight: 6 }] }
             }).addTo(map);
-
-            showToast("Route berechnet. Folgen Sie der Linie.");
-            document.body.classList.add('active-route');
+            showToast("Route gestartet.");
         }
 
-        // Standort finden
         document.getElementById('locateMe').onclick = () => {
-            showToast("Suche Standort...");
+            if (!navigator.geolocation) return showToast("GPS nicht unterstützt.");
             
-            if (!navigator.geolocation) {
-                showToast("Geolocation wird nicht unterstützt.");
-                return;
-            }
-
-            navigator.geolocation.getCurrentPosition((position) => {
+            navigator.geolocation.watchPosition((position) => {
                 const { latitude, longitude } = position.coords;
                 userLocation = { lat: latitude, lng: longitude };
 
-                if (userMarker) {
-                    userMarker.setLatLng([latitude, longitude]);
-                } else {
-                    userMarker = L.circleMarker([latitude, longitude], {
-                        radius: 8,
-                        fillColor: "#3b82f6",
-                        color: "#fff",
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.8
-                    }).addTo(map);
-                }
-
-                map.flyTo([latitude, longitude], 16);
-                showToast("Standort gefunden.");
-            }, () => {
-                showToast("Zugriff auf Standort verweigert.");
-            });
+                if (userMarker) userMarker.setLatLng([latitude, longitude]);
+                else userMarker = L.circleMarker([latitude, longitude], { radius: 8, fillColor: "#3b82f6", color: "#fff", weight: 2, fillOpacity: 0.8 }).addTo(map);
+                
+                document.getElementById('gps-icon').setAttribute('stroke', '#3b82f6');
+                updateNavigator();
+            }, () => showToast("GPS Zugriff verweigert."), { enableHighAccuracy: true });
         };
-
-        // --- UI EVENTS ---
 
         document.getElementById('backToList').onclick = () => {
             document.getElementById('intro-view').classList.remove('hidden');
             document.getElementById('detail-view').classList.add('hidden');
-            if (routingControl) {
-                map.removeControl(routingControl);
-                document.body.classList.remove('active-route');
-            }
+            if (routingControl) map.removeControl(routingControl);
         };
 
-        document.getElementById('toggleSidebar').onclick = toggleSidebarVisibility;
+        document.getElementById('toggleSidebar').onclick = () => document.getElementById('sidebar').classList.toggle('-translate-x-full');
 
-        function toggleSidebarVisibility() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('-translate-x-full');
-        }
-
-        // Initialisierung
         window.onload = initApp;
-
     </script>
 </body>
 </html>
