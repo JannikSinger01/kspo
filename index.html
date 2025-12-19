@@ -178,6 +178,32 @@
             animation: pulse-red 2s infinite;
         }
 
+        /* --- MARKER STYLES (Light & Gold) --- */
+        .number-icon {
+            background-color: #fdfcf9; /* Heller, papierartiger Hintergrund */
+            color: #2d3436; /* Dunkle Schrift für Lesbarkeit */
+            border: 2px solid #a67c00; /* Goldener Rahmen */
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px; 
+            font-family: 'Crimson Pro', serif;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15); /* Weicherer Schatten */
+            transition: all 0.3s ease;
+        }
+        .number-icon:hover {
+            transform: scale(1.15);
+            background-color: #a67c00; /* Füllt sich Gold beim Hover */
+            color: #fff; /* Weiße Schrift beim Hover */
+            border-color: #a67c00;
+            box-shadow: 0 6px 12px rgba(166, 124, 0, 0.3);
+        }
+
+        /* Styling für Audio Player */
+        audio::-webkit-media-controls-panel {
+            background-color: #f4f1ea;
+        }
     </style>
 </head>
 <body>
@@ -324,6 +350,10 @@
                     <div id="detail-image" class="w-full h-48 bg-gray-200 rounded mb-4 flex items-center justify-center italic text-gray-400 text-sm border">
                         
                     </div>
+                    
+                    <!-- Platzhalter für Multimedia (Dynamisch eingefügt) -->
+                    <div id="detail-media" class="mb-4 hidden"></div>
+
                     <div id="detail-content" class="text-sm leading-relaxed text-gray-700 space-y-4"></div>
                     <div class="mt-8 pt-4 border-t">
                         <button id="startNavigation" class="w-full bg-[#2d3436] text-white py-3 rounded-lg flex justify-center items-center hover:bg-black transition">
@@ -397,21 +427,28 @@
                 title: "Station I: Der Domplatz", 
                 coords: [52.2775, 8.0440], 
                 short: "Vorplatz des Doms.", 
-                content: "<p>Der Domplatz als historisches Zentrum der Macht spielt eine zentrale Rolle in der Stadtgeschichte.</p>" 
+                content: "<p>Der Domplatz als historisches Zentrum der Macht spielt eine zentrale Rolle in der Stadtgeschichte.</p>",
+                // PLATZHALTER FÜR MULTIMEDIA:
+                audio: "placeholder.mp3", // Wenn leer, wird kein Player angezeigt. Trage hier den Pfad ein.
+                model3d: "placeholder_model" // Wenn leer, kein 3D Button.
             },
             { 
                 id: 2, 
                 title: "Station II: Die Marienkirche", 
                 coords: [52.2778, 8.0413], 
                 short: "Marktplatz und Kirche.", 
-                content: "<p>Die Marienkirche am Markt war ein zentraler Ort des bürgerlichen Lebens und Handels.</p>" 
+                content: "<p>Die Marienkirche am Markt war ein zentraler Ort des bürgerlichen Lebens und Handels.</p>",
+                audio: "", // Kein Audio
+                model3d: "" // Kein 3D
             },
             { 
                 id: 3, 
                 title: "Station III: Das Heger Tor", 
                 coords: [52.2765, 8.0378], 
                 short: "Erinnerungsort.", 
-                content: "<p>Das Heger Tor (Waterloo-Tor) dient als Denkmal, dessen Bedeutung heute kritisch hinterfragt wird.</p>" 
+                content: "<p>Das Heger Tor (Waterloo-Tor) dient als Denkmal, dessen Bedeutung heute kritisch hinterfragt wird.</p>",
+                audio: "placeholder_audio_hegertor.mp3", // Beispiel: Audio vorhanden
+                model3d: "" 
             },
             { 
                 id: 4, 
@@ -586,7 +623,17 @@
 
             const listContainer = document.getElementById('station-list');
             stations.forEach(station => {
-                const marker = L.marker(station.coords).addTo(map);
+                // NEUER CODE: Nummerierte Marker
+                const icon = L.divIcon({
+                    className: 'number-icon',
+                    html: station.id,
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15],
+                    popupAnchor: [0, -20]
+                });
+
+                const marker = L.marker(station.coords, { icon: icon }).addTo(map);
+                
                 marker.bindPopup(`<div class="font-bold font-serif">${station.title}</div><button onclick="showDetail(${station.id})" class="text-accent-gold text-xs underline mt-1">Details</button>`, { className: 'custom-popup' });
 
                 const card = document.createElement('div');
@@ -603,6 +650,47 @@
             document.getElementById('detail-view').classList.remove('hidden');
             document.getElementById('detail-title').innerText = station.title;
             document.getElementById('detail-content').innerHTML = station.content;
+            
+            // --- MULTIMEDIA LOGIK ---
+            const mediaContainer = document.getElementById('detail-media');
+            mediaContainer.innerHTML = ''; // Vorher leeren
+            
+            if (station.audio || station.model3d) {
+                mediaContainer.classList.remove('hidden');
+                mediaContainer.innerHTML = `<h4 class="font-serif font-bold mb-3 text-sm border-b border-gray-200 pb-1">Multimediale Inhalte</h4>`;
+                
+                // Audio Player
+                if (station.audio) {
+                    const audioDiv = document.createElement('div');
+                    audioDiv.className = 'mb-3';
+                    audioDiv.innerHTML = `
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[10px] uppercase tracking-wider text-gray-500 font-bold">Audio-Guide</span>
+                        </div>
+                        <audio controls class="w-full h-8 rounded bg-[#f4f1ea]">
+                            <source src="${station.audio}" type="audio/mpeg">
+                            Ihr Browser unterstützt das Audio-Element nicht.
+                        </audio>
+                    `;
+                    mediaContainer.appendChild(audioDiv);
+                }
+
+                // 3D Model Button
+                if (station.model3d) {
+                    const modelBtn = document.createElement('button');
+                    modelBtn.className = 'w-full py-2 border border-[#a67c00] text-[#a67c00] rounded hover:bg-[#a67c00] hover:text-white transition flex items-center justify-center gap-2 text-sm font-medium';
+                    modelBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 22.37a.997.997 0 0 0 .5 0l7.5-4a1 1 0 0 0 .5-.86v-8l-8 4.25-8-4.25v8a1 1 0 0 0 .5.86l7.5 4Z"/><path d="M3 7l9-5 9 5M12 22V12"/></svg> 3D-Scan ansehen`;
+                    modelBtn.onclick = () => {
+                        // HIER: Logik zum Öffnen des 3D Viewers (z.B. Modal oder Link)
+                        alert("Platzhalter: Hier würde sich der 3D-Viewer öffnen für Modell: " + station.model3d);
+                    };
+                    mediaContainer.appendChild(modelBtn);
+                }
+
+            } else {
+                mediaContainer.classList.add('hidden');
+            }
+
             document.getElementById('startNavigation').onclick = () => startRoute(station.coords);
         }
 
