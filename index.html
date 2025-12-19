@@ -168,6 +168,16 @@
             transform: scale(1);
         }
 
+        /* Pulse Animation für Zielzone */
+        @keyframes pulse-red {
+            0% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+            100% { opacity: 0.4; transform: scale(0.8); }
+        }
+        .arrival-marker {
+            animation: pulse-red 2s infinite;
+        }
+
     </style>
 </head>
 <body>
@@ -296,7 +306,6 @@
         </div>
     </header>
 
-    <!-- HIER WAR DIE ÄNDERUNG: 'overflow-hidden' hinzugefügt -->
     <main class="flex flex-1 relative overflow-hidden">
         <!-- Sidebar -->
         <aside id="sidebar" class="sidebar absolute md:relative w-full md:w-96 bg-[#fdfcf9] border-r border-gray-200 h-full overflow-y-auto transform -translate-x-full md:translate-x-0 shadow-xl">
@@ -361,7 +370,8 @@
                         </div>
                         <div>
                             <p class="text-[9px] text-gray-400 uppercase">Status</p>
-                            <p class="text-sm font-semibold text-green-600 flex items-center">
+                            <!-- HIER WIRD DER STATUS DYNAMISCH GEÄNDERT -->
+                            <p id="nav-status-text" class="text-sm font-semibold text-green-600 flex items-center">
                                 <span class="h-1.5 w-1.5 rounded-full bg-green-600 mr-1"></span> Aktiv
                             </p>
                         </div>
@@ -436,6 +446,7 @@
         let userLocation = null;
         let routingControl = null;
         let userMarker = null;
+        let currentHighlightLayer = null; // Für den roten Kreis
 
         // --- TUTORIAL LOGIK ---
         let currentStepIndex = 0;
@@ -551,7 +562,6 @@
             document.getElementById('closeLit').onclick = () => {
                 document.getElementById('lit-overlay').classList.remove('active');
             };
-            // Optional: Schließen beim Klick auf den Hintergrund
             document.getElementById('lit-overlay').addEventListener('click', function(e) {
                 if(e.target === this) {
                     this.classList.remove('active');
@@ -613,6 +623,39 @@
                 document.getElementById('nav-dist').innerText = distText;
                 const minutes = Math.ceil(minDist / 80);
                 document.getElementById('nav-time').innerText = minutes + " Min.";
+                
+                // --- ARRIVAL CHECK LOGIC ---
+                const statusText = document.getElementById('nav-status-text');
+                
+                if (minDist < 40) { // Wenn näher als 40m
+                    statusText.innerHTML = `<span class="h-2 w-2 rounded-full bg-red-600 animate-pulse mr-2"></span> Ziel erreicht!`;
+                    statusText.classList.remove('text-green-600');
+                    statusText.classList.add('text-red-600');
+
+                    // Wenn wir diesen Kreis noch nicht gemalt haben
+                    if (!currentHighlightLayer || currentHighlightLayer._latlng.lat !== nearest.coords[0]) {
+                        if (currentHighlightLayer) map.removeLayer(currentHighlightLayer);
+                        
+                        currentHighlightLayer = L.circle(nearest.coords, {
+                            color: '#e74c3c',
+                            fillColor: '#c0392b',
+                            fillOpacity: 0.3,
+                            radius: 35, // Größe der Zone
+                            className: 'arrival-marker' // Pulsierende CSS Animation
+                        }).addTo(map);
+                        
+                        showToast("Sie haben das Ziel erreicht!");
+                    }
+                } else {
+                    statusText.innerHTML = `<span class="h-1.5 w-1.5 rounded-full bg-green-600 mr-1"></span> Aktiv`;
+                    statusText.classList.add('text-green-600');
+                    statusText.classList.remove('text-red-600');
+                    
+                    if (currentHighlightLayer) {
+                        map.removeLayer(currentHighlightLayer);
+                        currentHighlightLayer = null;
+                    }
+                }
             }
         }
 
