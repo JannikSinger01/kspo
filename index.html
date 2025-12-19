@@ -2,828 +2,317 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Osnabrück - ein kolonialgeschichtlicher Rundgang</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Koloniale Spuren Osnabrück | Digitale Stadtführung</title>
     
+    <!-- Tailwind CSS für das Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-     crossorigin=""/>
-
-    <!-- Leaflet Routing Machine CSS -->
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Leaflet Routing Machine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <style>
-        body, html { height: 100%; margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
-        
-        /* Map & Layout */
-        #map-container { position: relative; height: 100%; width: 100%; }
-        #map { height: 100%; width: 100%; z-index: 1; }
-        #sidebar { height: 100%; overflow-y: auto; scrollbar-width: thin; }
-        
-        /* UI Elemente Styling */
-        .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 0; overflow: hidden; }
-        .leaflet-popup-content { margin: 0; width: 280px !important; }
-        .leaflet-popup-tip { background: white; }
-        .leaflet-routing-container { display: none !important; }
-        
-        /* Marker & Icons */
-        .number-icon { 
-            background-color: #ea580c; 
-            color: white; 
-            border: 3px solid white; 
-            border-radius: 50%; 
-            text-align: center; 
-            line-height: 30px; 
-            font-weight: bold; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
-            transition: transform 0.2s; 
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --vintage-paper: #f4f1ea;
+            --charcoal: #2d3436;
+            --accent-gold: #a67c00;
         }
-        .number-icon:hover { transform: scale(1.1); background-color: #c2410c; }
-        
-        /* Standort-Marker-Styling */
-        .gps-marker { 
-            background-color: #3b82f6; 
-            border: 3px solid white; 
-            border-radius: 50%; 
-            width: 20px; 
-            height: 20px; 
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4); /* Fester Ring */
-            animation: pulse-blue 2s infinite; 
-        }
-        
-        /* Startpunkt-Marker-Styling */
-        .start-marker {
-            background-color: #16a34a; /* Grün für Start */
-            color: white;
-            border: 3px solid white;
-            border-radius: 50%;
-            width: 34px; 
-            height: 34px;
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--vintage-paper);
+            color: var(--charcoal);
+            height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7), 0 0 0 4px rgba(59, 130, 246, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0), 0 0 0 4px rgba(59, 130, 246, 0.4); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0), 0 0 0 4px rgba(59, 130, 246, 0.4); } }
-
-        /* Kacheln & Resizer */
-        .info-tile:hover { border-color: #ea580c; transform: translateY(-2px); }
-        #resizer { transition: background-color 0.2s; }
-        #resizer:hover, #resizer.resizing { background-color: #ea580c; }
-
-        /* Modal Scrollbar & Typo */
-        .modal-content::-webkit-scrollbar { width: 8px; }
-        .modal-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        .modal-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        .prose p { margin-bottom: 1rem; line-height: 1.7; color: #374151; }
-        .prose h4 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: bold; color: #1f2937; }
-        .prose blockquote { border-left: 4px solid #ea580c; padding-left: 1rem; font-style: italic; color: #4b5563; margin: 1.5rem 0; }
-
-        /* --- WELCOME SCREEN & TUTORIAL --- */
-        #welcome-screen {
-            position: fixed; inset: 0; z-index: 9999;
-            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-            display: flex; align-items: center; justify-content: center;
-            opacity: 1; transition: opacity 0.5s ease;
+        h1, h2, h3 {
+            font-family: 'Crimson Pro', serif;
         }
-        #welcome-screen.fade-out { opacity: 0; pointer-events: none; }
 
-        /* Tutorial Overlay (Dunkler Hintergrund) */
-        #tutorial-overlay {
-            position: fixed; inset: 0; z-index: 5000;
-            background: rgba(0, 0, 0, 0.7);
-            display: none; opacity: 0; transition: opacity 0.3s;
+        #map {
+            flex-grow: 1;
+            z-index: 1;
         }
-        #tutorial-overlay.active { display: block; opacity: 1; }
 
-        /* Tutorial Highlight Klasse (Wird Elementen gegeben) */
-        .tutorial-highlight {
-            position: relative;
-            z-index: 5001 !important; 
-            box-shadow: 0 0 0 4px #ea580c, 0 0 40px rgba(234, 88, 12, 0.5) !important;
-            transition: all 0.3s;
-            /* Wichtig, um Klicks durchzulassen, wenn es sich nicht um Buttons handelt */
-            pointer-events: none; 
+        .custom-popup .leaflet-popup-content-wrapper {
+            background: var(--vintage-paper);
+            color: var(--charcoal);
+            border-radius: 4px;
+            border: 1px solid var(--accent-gold);
+        }
+
+        /* Sidebar Glassmorphism */
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .station-card:hover {
+            border-left: 4px solid var(--accent-gold);
+            background: rgba(166, 124, 0, 0.05);
+        }
+
+        /* Verstecke Routing-Instruktionen standardmäßig auf Mobile */
+        .leaflet-routing-container {
+            display: none;
         }
         
-        /* Die Tutorial Text Box */
-        #tutorial-box {
-            position: fixed; z-index: 5002;
-            background: white; padding: 20px; border-radius: 12px;
-            max-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
-            bottom: 20%; left: 50%; transform: translateX(-50%);
-        }
-
-        /* Toast Notification */
-        #toast-notification {
-            position: fixed;
-            bottom: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 6000;
-            padding: 0.75rem 1.25rem;
-            background-color: #10b981; /* Emerald Green */
-            color: white;
-            border-radius: 9999px; /* Full rounded */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            font-size: 0.875rem;
-            font-weight: 600;
-            opacity: 0;
-            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
-            pointer-events: none;
-        }
-        #toast-notification.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(-20px);
+        .active-route .leaflet-routing-container {
+            display: block;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white !important;
+            font-size: 12px;
         }
     </style>
 </head>
-<body class="bg-gray-100 flex flex-col md:flex-row h-screen w-screen overflow-hidden" id="main-container">
+<body>
 
-    <!-- 1. WELCOME SCREEN -->
-    <div id="welcome-screen">
-        <div class="bg-white rounded-2xl p-8 max-w-lg w-11/12 text-center shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-orange-600"></div>
-            <div class="mb-6 flex justify-center">
-                <div class="bg-orange-100 p-4 rounded-full">
-                    <i class="fa-solid fa-shoe-prints text-4xl text-orange-600"></i>
-                </div>
-            </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Osnabrück</h1>
-            <h2 class="text-xl text-gray-600 font-medium mb-6">Ein kolonialgeschichtlicher Rundgang</h2>
-            <p class="text-gray-500 mb-8 leading-relaxed">
-                Entdecke die unsichtbaren Spuren der Geschichte in deiner Stadt. 
-                Dieser interaktive Guide führt dich zu Orten, die globale Zusammenhänge erzählen.
-            </p>
-            <button onclick="startApp()" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transform transition hover:scale-[1.02] active:scale-95">
-                Rundgang starten
-            </button>
-            <p class="text-xs text-gray-400 mt-4">Beta Version • Projektarbeit</p>
+    <!-- Header -->
+    <header class="bg-[#2d3436] text-white p-4 shadow-md flex justify-between items-center relative z-[1001]">
+        <div>
+            <h1 class="text-xl md:text-2xl font-semibold tracking-tight">Koloniale Spuren Osnabrück</h1>
+            <p class="text-xs text-gray-400 font-light italic">Ein geschichtswissenschaftliches Projekt zur Stadtführung</p>
         </div>
-    </div>
+        <button id="toggleSidebar" class="md:hidden bg-accent-gold p-2 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+    </header>
 
-    <!-- 2. TUTORIAL OVERLAY & BOX -->
-    <div id="tutorial-overlay"></div>
-    <div id="tutorial-box" class="hidden">
-        <div class="flex justify-between items-start mb-2">
-            <h3 id="tut-title" class="font-bold text-lg text-gray-800">Titel</h3>
-            <span id="tut-step" class="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded">1/5</span>
-        </div>
-        <p id="tut-text" class="text-sm text-gray-600 mb-4 leading-relaxed">Erklärungstext hier.</p>
-        <div class="flex justify-end gap-2">
-            <button onclick="endTutorial()" class="text-xs text-gray-400 hover:text-gray-600 px-2">Überspringen</button>
-            <button onclick="nextTutorialStep()" class="bg-gray-900 hover:bg-black text-white text-xs font-bold py-2 px-4 rounded-lg">
-                Weiter <i class="fa-solid fa-arrow-right ml-1"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL (Lese-Ansicht) -->
-    <div id="info-modal" class="fixed inset-0 z-[2000] hidden">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
-        <div class="absolute inset-4 md:inset-auto md:top-10 md:bottom-10 md:left-1/2 md:transform md:-translate-x-1/2 md:w-[700px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-[fadeIn_0.3s_ease-out]">
-            <div class="h-48 md:h-64 relative flex-shrink-0">
-                <img id="modal-img" src="" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                <button onclick="closeModal()" class="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 w-10 h-10 backdrop-blur-md transition-colors flex items-center justify-center">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
-                <div class="absolute bottom-4 left-6 right-6">
-                    <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded mb-2 inline-block uppercase tracking-wider">Hintergrundwissen</span>
-                    <h2 id="modal-title" class="text-2xl md:text-3xl font-bold text-white leading-tight shadow-sm">Titel</h2>
-                </div>
-            </div>
-            <div class="flex-grow overflow-y-auto p-6 md:p-10 modal-content bg-white">
-                <div id="modal-text" class="prose max-w-none text-lg"></div>
-                <div class="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center text-sm text-gray-500">
-                    <span id="modal-source">Quelle</span>
-                    <!-- Hinzugefügter Platzhalter für den externen Link im Modal-Footer -->
-                    <a id="modal-external-link" href="#" target="_blank" class="hidden text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-1"></a>
-                    <button onclick="closeModal()" class="text-orange-600 font-semibold hover:text-orange-700">Schließen</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast-notification"></div>
-
-
-    <!-- HAUPTBEREICH: KARTE -->
-    <div class="relative flex-grow h-1/2 md:h-full w-full md:w-auto order-1">
-        
-        <!-- Header Overlay -->
-        <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-[500] w-11/12 max-w-md pointer-events-none">
-            <div class="bg-white/95 backdrop-blur-md px-6 py-3 rounded-2xl shadow-xl border border-gray-200 flex items-center justify-between pointer-events-auto">
-                <div class="flex items-center gap-3">
-                    <div class="bg-orange-100 p-2 rounded-full text-orange-600">
-                        <i class="fa-solid fa-shoe-prints"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-gray-900 font-bold text-sm uppercase tracking-wider">Osnabrück</h1>
-                        <p class="text-xs text-gray-500 font-medium">ein kolonialgeschichtlicher Rundgang</p>
+    <main class="flex flex-1 relative">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar absolute md:relative w-full md:w-96 bg-[#fdfcf9] border-r border-gray-200 h-full overflow-y-auto transform -translate-x-full md:translate-x-0 shadow-xl">
+            <div class="p-6">
+                <div id="intro-view">
+                    <h2 class="text-2xl mb-4 border-b border-gray-200 pb-2">Stationen der Tour</h2>
+                    <p class="text-sm text-gray-600 mb-6">Wählen Sie einen Ort auf der Karte oder aus der Liste, um mehr über die kolonialen Verflechtungen Osnabrücks zu erfahren.</p>
+                    
+                    <div id="station-list" class="space-y-4">
+                        <!-- Stationen werden dynamisch geladen -->
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- ROUTEN PLANER PANEL (ID hinzugefügt für Tutorial) -->
-        <div id="routing-panel" class="absolute top-24 left-4 z-[500] max-w-[260px] md:max-w-[300px]">
-            <div class="bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-lg border border-gray-200">
-                <h3 class="text-gray-800 font-bold text-sm mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-route text-blue-500"></i> Anreise & Route
-                </h3>
-                <p class="text-xs text-gray-500 mb-3 leading-relaxed">Berechne den Weg von deinem Standort zum Startpunkt der Tour.</p>
-                <div id="route-stats" class="hidden mb-3 bg-blue-50 p-2 rounded-lg border border-blue-100">
-                    <div class="flex justify-between items-center text-xs text-blue-800 font-medium">
-                        <span id="route-dist">-- km</span>
-                        <span id="route-time">-- min</span>
-                    </div>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <button onclick="calculateRouteToStart()" id="btn-calc-route" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-location-crosshairs"></i> Route von hier starten
+                <!-- Detail View (Hidden by default) -->
+                <div id="detail-view" class="hidden">
+                    <button id="backToList" class="text-sm text-accent-gold flex items-center mb-4 hover:underline">
+                        <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Zurück zur Übersicht
                     </button>
-                    <button onclick="resetRoute()" id="btn-reset-route" class="hidden w-full bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 px-3 rounded-lg text-xs font-semibold transition-all">
-                        Tour zurücksetzen
-                    </button>
+                    <h2 id="detail-title" class="text-2xl mb-2"></h2>
+                    <div id="detail-image" class="w-full h-48 bg-gray-200 rounded mb-4 overflow-hidden flex items-center justify-center italic text-gray-500 text-sm">
+                        [Bildplatzhalter: Historische Ansicht]
+                    </div>
+                    <div id="detail-content" class="text-sm leading-relaxed text-gray-700 space-y-4">
+                        <!-- Inhalt -->
+                    </div>
+                    <div class="mt-8 pt-4 border-t border-gray-200">
+                        <button id="startNavigation" class="w-full bg-[#2d3436] text-white py-3 rounded-lg flex justify-center items-center hover:bg-black transition">
+                            <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 7 9 5 9-5V5l-9 5-9-5v2Z"/><path d="M21 7v10l-9 5-9-5V7l9 5 9-5Z"/></svg>
+                            Wegbeschreibung starten
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </aside>
 
-        <!-- NEU: Map Type Switch (Oben Rechts, ansprechend) -->
-        <div id="map-type-switch" class="absolute top-24 right-4 z-[500] pointer-events-auto bg-white rounded-xl shadow-lg border border-gray-200 p-1.5 flex gap-1">
-            <button id="switch-osm" onclick="setMapLayer('osm')" class="map-switch-btn bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition-colors flex items-center gap-1">
-                <i class="fa-solid fa-map-location-dot"></i> Karte
-            </button>
-            <button id="switch-sat" onclick="setMapLayer('sat')" class="map-switch-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-bold py-2 px-3 rounded-lg transition-colors flex items-center gap-1">
-                <i class="fa-solid fa-earth-europe"></i> Satellit
-            </button>
-        </div>
-        
-        <!-- Location Button (ID hinzugefügt für Tutorial) -->
-        <div id="location-btn-wrapper" class="absolute bottom-8 right-4 z-[500] flex flex-col gap-3">
-            <button onclick="locateUser()" class="bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110" title="Mein Standort">
-                <i class="fa-solid fa-location-arrow text-lg"></i>
-            </button>
-        </div>
-
+        <!-- Map Container -->
         <div id="map"></div>
+
+        <!-- GPS Button Overlay -->
+        <button id="locateMe" class="absolute bottom-8 right-8 z-[1000] bg-white p-4 rounded-full shadow-2xl border border-gray-200 hover:bg-gray-50 active:scale-95 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a67c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line></svg>
+        </button>
+    </main>
+
+    <!-- UI Overlay for Notifications -->
+    <div id="toast" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm opacity-0 transition-opacity z-[2000] pointer-events-none">
+        Standort wird abgerufen...
     </div>
-
-    <!-- RESIZER -->
-    <div id="resizer" class="hidden md:block w-1.5 h-full bg-gray-300 cursor-col-resize z-30 flex-shrink-0 order-2 hover:w-2 transition-all"></div>
-
-    <!-- SEITENLEISTE (ID für Tutorial genutzt) -->
-    <aside id="sidebar" class="w-full md:w-[320px] bg-white border-l border-gray-200 z-20 flex-shrink-0 order-3 shadow-xl flex flex-col" style="min-width: 250px; max-width: 800px;">
-        <div class="p-6 bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
-            <h2 class="text-xl font-bold text-gray-800">Stationen</h2>
-            <p class="text-sm text-gray-500 mt-1">Entdecke die unsichtbare Geschichte</p>
-        </div>
-        
-        <div id="tile-container" class="p-4 space-y-4 pb-20">
-            <!-- Dynamischer Content -->
-        </div>
-    </aside>
-
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-     crossorigin=""></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <script>
-        // --- HILFSFUNKTIONEN ---
-
-        // Funktion zur Anzeige einer Toast-Benachrichtigung
-        function showToast(message, duration = 3000) {
-            const toast = document.getElementById('toast-notification');
-            toast.innerText = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, duration);
-        }
-
-        // --- TUTORIAL LOGIK ---
-        
-        const tutorialSteps = [
+        // --- DATEN DER STATIONEN ---
+        const stations = [
             {
-                target: 'sidebar',
-                title: "Die Stationen",
-                text: "Hier rechts (oder unten auf dem Handy) findest du alle Stationen des Rundgangs. Klicke auf eine Karte, um mehr zu erfahren oder die Geschichte zu lesen."
+                id: 1,
+                title: "Marktplatz & Rathaus",
+                coords: [52.2776, 8.0411],
+                short: "Zentrum des Westfälischen Friedens und Handelswege.",
+                content: "<p>Das Rathaus des Westfälischen Friedens ist nicht nur ein Symbol der Diplomatie. Als Handelsstadt profitierte Osnabrück indirekt von kolonialen Warenströmen, die über die Hanse und später norddeutsche Häfen flossen.</p><p>Historische Akten belegen, dass auch Osnabrücker Kaufleute in den Überseehandel investierten, was zum Wohlstand der Stadt im 18. und 19. Jahrhundert beitrug.</p>"
             },
             {
-                target: 'resizer',
-                title: "Ansicht anpassen",
-                text: "Du kannst diese graue Leiste mit der Maus greifen und verschieben, um die Karte größer oder kleiner zu machen – ganz wie du es brauchst."
+                id: 2,
+                title: "Bucksturm & Mahnmal",
+                coords: [52.2745, 8.0385],
+                short: "Ehemaliger Wehrturm mit Blick auf Gedenkkultur.",
+                content: "<p>In der Nähe des Bucksturms finden sich Spuren der Auseinandersetzung mit der deutschen Kolonialvergangenheit. Oft wurden Denkmäler für 'Kolonialhelden' erst spät hinterfragt.</p><p>Dieser Ort dient heute als Reflexionspunkt für die Verbindung zwischen lokalem Militarismus und imperialen Bestrebungen des Kaiserreichs.</p>"
             },
             {
-                target: 'routing-panel',
-                title: "Anreise planen",
-                text: "Bist du noch nicht am Startpunkt? Hier kannst du deinen aktuellen Standort nutzen, um dich zum Museumsquartier navigieren zu lassen."
-            },
-            {
-                // Aktualisierter Target und Text für den neuen Switch
-                target: 'map-type-switch',
-                title: "Karten-Ansichten",
-                text: "Wechsle hier jederzeit zwischen der Standard-Straßenkarte ('Karte') und der detaillierten Satelliten-Ansicht, um die Umgebung besser zu erkunden. Die Stations-Kacheln bieten zudem einen 'Satelliten-Zoom' an.",
-            },
-            {
-                target: 'location-btn-wrapper',
-                title: "Orientierung",
-                text: "Verloren gegangen? Mit diesem Button springt die Karte immer zurück zu deiner aktuellen GPS-Position."
+                id: 3,
+                title: "Ledenhof",
+                coords: [52.2725, 8.0445],
+                short: "Adelssitz mit Verbindungen zur Überseewirtschaft.",
+                content: "<p>Der Ledenhof, ein ehemaliger mittelalterlicher Stadthof, repräsentiert die Oberschicht Osnabrücks. Viele dieser Familien waren Akteure in globalen Netzwerken, die Kolonialwaren wie Tabak, Zucker und Kaffee nach Westfalen brachten.</p>"
             }
         ];
 
-        let currentStepIndex = 0;
+        // --- MAP INITIALISIERUNG ---
+        const map = L.map('map', {
+            zoomControl: false
+        }).setView([52.277, 8.042], 15);
 
-        function startApp() {
-            // Welcome Screen ausblenden
-            const welcome = document.getElementById('welcome-screen');
-            welcome.classList.add('fade-out');
-            setTimeout(() => {
-                welcome.style.display = 'none';
-                // Tutorial starten (kurze Verzögerung für den Effekt)
-                setTimeout(startTutorial, 500);
-            }, 500);
-        }
-
-        function startTutorial() {
-            document.getElementById('tutorial-overlay').classList.add('active');
-            document.getElementById('tutorial-box').classList.remove('hidden');
-            showStep(0);
-        }
-
-        function showStep(index) {
-            // Alten Highlight entfernen und Exit-Aktionen ausführen
-            document.querySelectorAll('.tutorial-highlight').forEach(el => {
-                el.classList.remove('tutorial-highlight');
-            });
-            
-            if (currentStepIndex < tutorialSteps.length && tutorialSteps[currentStepIndex].onExit) {
-                tutorialSteps[currentStepIndex].onExit();
-            }
-
-            if (index >= tutorialSteps.length) {
-                endTutorial();
-                return;
-            }
-
-            currentStepIndex = index;
-            const step = tutorialSteps[currentStepIndex];
-            const targetEl = document.getElementById(step.target);
-
-            // Highlight setzen
-            if (targetEl) targetEl.classList.add('tutorial-highlight');
-            
-            // Enter-Aktionen ausführen
-            if (step.onEnter) {
-                step.onEnter();
-            }
-
-            // Text setzen
-            document.getElementById('tut-title').innerText = step.title;
-            document.getElementById('tut-text').innerText = step.text;
-            document.getElementById('tut-step').innerText = `${index + 1}/${tutorialSteps.length}`;
-            
-            // Button Text anpassen beim letzten Schritt
-            const nextBtn = document.querySelector('#tutorial-box button:last-child');
-            if (index === tutorialSteps.length - 1) {
-                nextBtn.innerHTML = 'Fertig <i class="fa-solid fa-check ml-1"></i>';
-            } else {
-                nextBtn.innerHTML = 'Weiter <i class="fa-solid fa-arrow-right ml-1"></i>';
-            }
-        }
-
-        function nextTutorialStep() {
-            showStep(currentStepIndex + 1);
-        }
-
-        function endTutorial() {
-            // Letzten Exit-Aktionen ausführen
-            if (currentStepIndex < tutorialSteps.length && tutorialSteps[currentStepIndex].onExit) {
-                tutorialSteps[currentStepIndex].onExit();
-            }
-            
-            // Aufräumen
-            document.querySelectorAll('.tutorial-highlight').forEach(el => {
-                el.classList.remove('tutorial-highlight');
-            });
-            document.getElementById('tutorial-overlay').classList.remove('active');
-            document.getElementById('tutorial-box').classList.add('hidden');
-        }
-
-
-        // --- VORHANDENE APP LOGIK (Daten etc.) ---
-        
-        const tourStops = [
-            {
-                title: "Museumsquartier (Stadtgeschichtliches Museum)",
-                lat: 52.2751048,
-                lng: 8.0380043,
-                desc: "Startpunkt des Rundgangs. Das Museumsquartier vereint Kunst und Geschichte. Auch hier finden sich Spuren globaler Verflechtungen.",
-                longText: `
-                    <p>Willkommen am Startpunkt des Rundgangs: dem Museumsquartier Osnabrück.</p>
-                    <h4>Geschichte bewahren und hinterfragen</h4>
-                    <p>Das Stadtgeschichtliche Museum (Kulturgeschichtliches Museum) bewahrt nicht nur lokale Artefakte, sondern auch Objekte, die durch globale Handelsbeziehungen nach Osnabrück gelangten.</p>
-                    <p>Museen sind heute wichtige Orte der Aufarbeitung: Wie sind Objekte in die Sammlung gekommen? Welche kolonialen Machtstrukturen spielten eine Rolle? Hier beginnt die Spurensuche nach dem kolonialen Erbe der Stadt.</p>
-                `,
-                img: "https://placehold.co/600x400?text=Bild+Platzhalter",
-                source: "Bildquelle: Name des Urhebers",
-                link: "https://www.museumsquartier-osnabrueck.de/"
-            },
-            {
-                title: "Schlossgarten: Die vier Kontinente",
-                lat: 52.2711, 
-                lng: 8.0450,
-                desc: "Vier Statuen auf der Terrasse repräsentieren die Kontinente – aus einer zutiefst eurozentrischen Sicht.",
-                longText: `
-                    <p>Auf der Terrasse des Osnabrücker Schlosses, mit Blick auf den wunderschönen Schlossgarten, stehen vier barocke Sandsteinfiguren. Sie sind sogenannte "Erdteilallegorien" und stellen Europa, Afrika, Asien und Amerika dar.</p>
-                    <h4>Eine Hierarchie in Stein</h4>
-                    <p>Diese Statuen sind nicht neutral. Sie spiegeln das Weltbild des 18. Jahrhunderts wider, in dem Europa an der Spitze der Zivilisation gesehen wurde:</p>
-                    <blockquote>
-                    "Europa wird oft als Herrscherin mit Krone dargestellt, umgeben von Symbolen der Kunst und Wissenschaft. Die anderen Kontinente werden hingegen oft als 'wild', 'reich an Naturschätzen' aber kulturell unterlegen inszeniert."
-                    </blockquote>
-                    <p>Afrika wird oft halbnackt und mit exotischen Tieren assoziiert, Amerika als 'edler Wilder'. Diese Bilder prägten über Jahrhunderte das europäische Denken und legitimierten koloniale Herrschaft als 'Zivilisierungsmission'.</p>
-                    <h4>Der Standort</h4>
-                    <p>Sie stehen direkt auf der südlichen Terrasse des Schlosses. Ein kritischer Blick auf diese Kunstwerke ist essenziell für das Verständnis lokaler Kolonialgeschichte.</p>
-                `,
-                img: "https://placehold.co/600x400?text=Bild+Platzhalter",
-                source: "Bildquelle: Name des Urhebers",
-                link: null 
-            },
-            // STATION 3: Marienkirche
-            {
-                title: "Marienkirche: Die Taufkirche von Christian Schepeler",
-                // Koordinaten der Marienkirche (Rathausplatz)
-                lat: 52.2783, 
-                lng: 8.0475,
-                desc: "Die Kirche, in der Christian Schepeler (geb. 1827) getauft wurde. Sein Lebensweg führte ihn in die Dienste kolonialer Mächte in Westafrika.",
-                longText: `
-                    <p>Die Marienkirche ist ein zentraler Ort in der Osnabrücker Altstadt. Am 27. April 1827 wurde hier Christian Schepeler getauft.</p>
-                    <h4>Eine lokale Geschichte mit globaler Auswirkung</h4>
-                    <p>Schepeler entstammte einer angesehenen Osnabrücker Familie. Sein Lebensweg ist ein Beispiel dafür, wie eng die Provinzstadt Osnabrück im 19. Jahrhundert mit dem globalen Kolonialismus verbunden war.</p>
-                    <p>Er trat in die Dienste der niederländischen Kolonialmacht und diente ab 1856 als Soldat in Westafrika, im heutigen Ghana. Er war maßgeblich an der Unterdrückung von Aufständen beteiligt und spielte eine Rolle in der gewaltsamen Expansion der europäischen Kontrolle. Sein Schicksal und seine Taten sind ein dunkles Kapitel, das in der lokalen Erinnerung oft ausgeblendet wird.</p>
-                    <blockquote>
-                    "Die Marienkirche ist so gesehen nicht nur ein Ort der Frömmigkeit, sondern auch ein Ausgangspunkt einer Geschichte, die von Osnabrück bis an die Goldküste reicht."
-                    </blockquote>
-                    <p>Für eine tiefere Recherche zu Christian Schepelers Rolle und Lebensweg folge dem Link.</p>
-                `,
-                img: "https://placehold.co/600x400?text=Marienkirche+Osnabrueck",
-                source: "Bildquelle: OpenStreetMap",
-                // Platzhalter-Link für die externe App
-                link: "https://www.hier-kommt-der-link-zu-schepelers-app.de/" 
-            },
-            // NEUE STATION 4: Marktplatz
-            {
-                title: "True Born Osnabrughs: Kolonialer Handel und Leinen",
-                // Koordinaten des Osnabrücker Marktplatzes/Rathauses
-                lat: 52.2785, 
-                lng: 8.0478,
-                desc: "Der Marktplatz, das historische Handelszentrum Osnabrücks, ist untrennbar mit dem Leinenhandel und den Profiten aus dem kolonialen System verbunden.",
-                longText: `
-                    <p>Osnabrücker Leinen ("True Born Osnabrughs") war vom 17. bis ins 19. Jahrhundert ein global gefragtes Handelsgut. Am Markt wurde dieser Reichtum generiert.</p>
-                    <h4>Das Osnabrücker Leinen und die Versklavung</h4>
-                    <p>Das hier gehandelte Leinen fand seinen Weg über norddeutsche Häfen nach Westafrika, in die Karibik und nach Nordamerika. Ein großer Teil dieses Leinens wurde im sogenannten atlantischen Dreieckshandel direkt oder indirekt gegen versklavte Menschen getauscht.</p>
-                    <p>Das Tuch diente als Tauschmittel ("Warenfetisch") für den Kauf von Sklaven, die auf den Plantagen Baumwolle und Zucker produzierten. Ohne diesen globalen, auf Versklavung basierenden Markt wäre das Osnabrücker Leinen nicht zu solchem Reichtum gelangt.</p>
-                    <h4>Das Leggesiegel</h4>
-                    <p>Um die hohe Qualität und den echten Osnabrücker Ursprung zu garantieren, wurde das Leinen mit dem sogenannten Leggesiegel versehen. Dieses Siegel symbolisiert nicht nur handwerkliche Präzision, sondern auch die Verlässlichkeit des Produkts im globalen, kolonialen Handelssystem.</p>
-                    <blockquote>
-                    "Der Prunk und Reichtum der historischen Gebäude rund um den Marktplatz, insbesondere des Rathauses, zeugen auch von den enormen Profiten, die aus diesem globalen Handelsnetzwerk, das auf kolonialer Ausbeutung beruhte, gezogen wurden."
-                    </blockquote>
-                    <p>Osnabrück war ein Profitakteur des kolonialen Systems, nicht nur dessen Opfer.</p>
-                `,
-                img: "https://placehold.co/600x400?text=Marktplatz+Osnabrueck",
-                source: "Bildquelle: Stadtarchiv Osnabrück",
-                link: null 
-            }
-        ];
-
-        const map = L.map('map', { zoomControl: false }).setView([52.2742, 8.0435], 15);
-        const osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
-        const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri' });
-
-        /**
-         * Schaltet zwischen OSM- und Satelliten-Layer um und aktualisiert die Button-Ästhetik.
-         * @param {string} type - 'osm' für Standardkarte oder 'sat' für Satellitenbild.
-         */
-        window.setMapLayer = function(type) {
-            const osmBtn = document.getElementById('switch-osm');
-            const satBtn = document.getElementById('switch-sat');
-
-            if (type === 'sat') {
-                if (!map.hasLayer(satLayer)) {
-                    map.removeLayer(osmLayer);
-                    map.addLayer(satLayer);
-                }
-                satBtn.classList.remove('bg-white', 'text-gray-700', 'hover:bg-gray-100');
-                satBtn.classList.add('bg-orange-600', 'text-white');
-                osmBtn.classList.add('bg-white', 'text-gray-700', 'hover:bg-gray-100');
-                osmBtn.classList.remove('bg-orange-600', 'text-white');
-            } else { // type === 'osm'
-                if (!map.hasLayer(osmLayer)) {
-                    map.removeLayer(satLayer);
-                    map.addLayer(osmLayer);
-                }
-                osmBtn.classList.remove('bg-white', 'text-gray-700', 'hover:bg-gray-100');
-                osmBtn.classList.add('bg-orange-600', 'text-white');
-                satBtn.classList.add('bg-white', 'text-gray-700', 'hover:bg-gray-100');
-                satBtn.classList.remove('bg-orange-600', 'text-white');
-            }
-        }
-
-        window.activateDroneView = function(lat, lng) {
-            // Schaltet zur Satellitenansicht und fliegt dorthin
-            setMapLayer('sat'); 
-            map.flyTo([lat, lng], 19, { duration: 2 });
-            showToast("Satelliten-Zoom aktiviert.", 2000);
-        }
-
-        const markers = [];
-        const originalWaypoints = [];
-        const tileContainer = document.getElementById('tile-container');
-
-        // Marker-Icons definieren
-        const startIcon = L.divIcon({ 
-            className: 'bg-transparent', 
-            html: `<div class="start-marker"><i class="fa-solid fa-flag-checkered"></i></div>`, 
-            iconSize: [34, 34], 
-            iconAnchor: [17, 17] 
-        });
-
-        // Eigene Marker-Erstellungsfunktion
-        function createStopMarker(stop, index) {
-            const isStart = index === 0;
-            const icon = isStart 
-                ? startIcon 
-                : L.divIcon({ className: 'bg-transparent', html: `<div class="number-icon">${index + 1}</div>`, iconSize: [34, 34], iconAnchor: [17, 17], popupAnchor: [0, -20] });
-            
-            const marker = L.marker([stop.lat, stop.lng], { icon: icon }).addTo(map);
-            
-            let popupLinks = `
-                <button onclick="openModal(${index})" class="flex-1 bg-gray-800 hover:bg-black text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">
-                    <i class="fa-solid fa-book-open mr-1"></i> Lesen
-                </button>
-            `;
-            // NEU: Zusätzlicher Link im Popup, falls vorhanden
-            if(stop.link) {
-                 popupLinks += `<a href="${stop.link}" target="_blank" class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium py-1.5 px-3 rounded-lg transition-colors">
-                                    <i class="fa-solid fa-external-link-alt mr-1"></i> Extern
-                                </a>`;
-            }
-
-            const popupContent = `
-                <div class="flex flex-col">
-                    <div class="h-32 w-full bg-gray-200 overflow-hidden relative">
-                        <img src="${stop.img}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400?text=Kein+Bild'">
-                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-8">
-                            <span class="text-white text-xs font-bold uppercase tracking-widest">${isStart ? 'Startpunkt' : `Station ${index + 1}`}</span>
-                        </div>
-                    </div>
-                    <div class="p-4 bg-white">
-                        <h3 class="font-bold text-gray-800 text-lg mb-2 leading-tight">${stop.title}</h3>
-                        <div class="flex gap-2">
-                            ${popupLinks}
-                            <button onclick="activateDroneView(${stop.lat}, ${stop.lng})" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shadow-sm" title="Satelliten-Zoom">
-                                <i class="fa-solid fa-earth-europe"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            marker.bindPopup(popupContent);
-            markers.push(marker);
-        }
-        
-        // Marker und Sidebar-Tiles erstellen
-        tourStops.forEach((stop, index) => {
-            originalWaypoints.push(L.latLng(stop.lat, stop.lng));
-            createStopMarker(stop, index);
-
-            const tile = document.createElement('div');
-            // Ästhetische und Größen-Anpassungen (shadow-lg, p-6, h-48)
-            tile.className = 'info-tile bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden transition-all duration-300 cursor-pointer group hover:shadow-xl';
-            
-            let linksHtml = '';
-            if(stop.link) {
-                 // Externer Link Button mit Akzentfarbe Grau
-                 linksHtml += `<a href="${stop.link}" onclick="event.stopPropagation()" target="_blank" class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium py-2 px-3 rounded-lg transition-colors">
-                                    <i class="fa-solid fa-external-link-alt mr-1"></i> Externe App
-                                </a>`;
-            }
-
-            tile.innerHTML = `
-                <div class="flex flex-col">
-                    <div class="h-48 overflow-hidden relative">
-                         <img src="${stop.img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onerror="this.src='https://placehold.co/600x400?text=Kein+Bild'">
-                         <div class="absolute top-3 left-3 bg-orange-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-md text-sm border-2 border-white">
-                            ${index + 1}
-                         </div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="font-bold text-gray-900 text-lg mb-2">${stop.title}</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">${stop.desc}</p>
-                        <div class="flex flex-col gap-2 pt-3 border-t border-gray-100">
-                            <button onclick="event.stopPropagation(); openModal(${index})" class="w-full bg-gray-900 hover:bg-black text-white py-2.5 px-4 rounded-lg text-sm font-semibold transition-all shadow-md flex items-center justify-center gap-2 group-hover:shadow-lg">
-                                <i class="fa-solid fa-book-open"></i> Geschichte lesen
-                            </button>
-                            <div class="flex gap-2 mt-1">
-                                <!-- Satelliten-Zoom Button mit Akzentfarbe -->
-                                <button onclick="event.stopPropagation(); activateDroneView(${stop.lat}, ${stop.lng})" class="flex-1 text-center bg-orange-600 hover:bg-orange-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors shadow-sm">
-                                    <i class="fa-solid fa-earth-europe mr-1"></i> Satelliten-Zoom
-                                </button>
-                                ${linksHtml}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            tile.addEventListener('click', () => {
-                map.flyTo([stop.lat, stop.lng], 16, { duration: 1.5 });
-                setTimeout(() => { markers[index].openPopup(); }, 1500);
-            });
-            tileContainer.appendChild(tile);
-        });
-
-        // Routen-Kontrolle mit verbessertem Linienstil
-        let routingControl = L.Routing.control({
-            waypoints: originalWaypoints,
-            routeWhileDragging: false,
-            draggableWaypoints: false,
-            addWaypoints: false,
-            fitSelectedRoutes: false,
-            show: false,
-            // Keine Standard-Marker von LRM verwenden
-            createMarker: function() { return null; }, 
-            lineOptions: { 
-                styles: [{
-                    color: '#ea580c', 
-                    opacity: 0.8, 
-                    weight: 8, // Dickere Linie
-                    lineCap: 'round',
-                    // Schatten-Effekt hinzufügen
-                    className: 'route-shadow' 
-                }, 
-                {
-                    color: 'white', 
-                    opacity: 0.2, 
-                    weight: 12,
-                    lineCap: 'round', 
-                    // Eine weiße Umrandung für bessere Sichtbarkeit
-                }] 
-            }
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         }).addTo(map);
 
-        routingControl.on('routesfound', function(e) {
-            const routes = e.routes;
-            const summary = routes[0].summary;
-            const distKm = (summary.totalDistance / 1000).toFixed(1);
-            const timeMin = Math.round(summary.totalTime / 60);
-            document.getElementById('route-stats').classList.remove('hidden');
-            document.getElementById('route-dist').innerText = distKm + " km gesamt";
-            document.getElementById('route-time').innerText = "~" + timeMin + " min";
-        });
+        L.control.zoom({ position: 'topright' }).addTo(map);
 
-        window.calculateRouteToStart = function() {
-            const btn = document.getElementById('btn-calc-route');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Orte Standort...';
-            btn.disabled = true;
+        let userLocation = null;
+        let routingControl = null;
+        let userMarker = null;
 
-            if (!navigator.geolocation) {
-                showToast("Geolocation wird nicht unterstützt.", 5000);
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                return;
-            }
+        // --- FUNKTIONEN ---
 
-            navigator.geolocation.getCurrentPosition(position => {
-                const userLat = position.coords.latitude;
-                const userLng = position.coords.longitude;
-                
-                // Alte Marker entfernen (außer den Stationen)
-                if (window.userMarker) map.removeLayer(window.userMarker);
+        function initApp() {
+            const listContainer = document.getElementById('station-list');
+            
+            stations.forEach(station => {
+                // Marker hinzufügen
+                const marker = L.marker(station.coords).addTo(map);
+                marker.bindPopup(`<div class="font-semibold">${station.title}</div><button onclick="showDetail(${station.id})" class="text-accent-gold text-xs underline">Details ansehen</button>`, { className: 'custom-popup' });
 
-                // Nur die Waypoints für die Route neu setzen
-                const newWaypoints = [L.latLng(userLat, userLng), ...originalWaypoints];
-                routingControl.setWaypoints(newWaypoints);
-                
-                // Benutzer-Marker hinzufügen/aktualisieren
-                const gpsIcon = L.divIcon({ className: 'gps-wrapper', html: '<div class="gps-marker"></div>', iconSize: [26, 26], iconAnchor: [13, 13] });
-                window.userMarker = L.marker([userLat, userLng], {icon: gpsIcon}).addTo(map);
-                map.flyTo([userLat, userLng], 15);
-
-                btn.classList.add('hidden');
-                document.getElementById('btn-reset-route').classList.remove('hidden');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-
-                showToast("Standort erfolgreich geortet und Route berechnet!", 3000);
-            }, error => {
-                showToast("Fehler beim Orten: Standortzugriff verweigert.", 5000);
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                // Liste generieren
+                const card = document.createElement('div');
+                card.className = 'station-card p-4 bg-white border border-gray-100 rounded shadow-sm cursor-pointer transition';
+                card.innerHTML = `
+                    <h3 class="font-semibold text-lg">${station.title}</h3>
+                    <p class="text-xs text-gray-500">${station.short}</p>
+                `;
+                card.onclick = () => {
+                    showDetail(station.id);
+                    map.flyTo(station.coords, 17);
+                };
+                listContainer.appendChild(card);
             });
         }
 
-        window.resetRoute = function() {
-            // Benutzer-Marker entfernen
-            if (window.userMarker) map.removeLayer(window.userMarker);
-            window.userMarker = null;
-
-            // Route auf nur die Stationen zurücksetzen
-            routingControl.setWaypoints(originalWaypoints);
-            document.getElementById('btn-calc-route').classList.remove('hidden');
-            document.getElementById('btn-reset-route').classList.add('hidden');
-            document.getElementById('route-stats').classList.add('hidden');
-            map.flyTo(originalWaypoints[0], 16);
-            showToast("Route zurückgesetzt.", 2000);
-        }
-
-        const modal = document.getElementById('info-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalText = document.getElementById('modal-text');
-        const modalImg = document.getElementById('modal-img');
-        const modalSource = document.getElementById('modal-source');
-        const modalExternalLinkAnchor = document.getElementById('modal-external-link');
-
-
-        window.openModal = function(index) {
-            const data = tourStops[index];
-            modalTitle.innerText = data.title;
-            modalText.innerHTML = data.longText;
-            modalImg.src = data.img;
-            modalSource.innerText = data.source || "Keine Angabe";
+        function showDetail(id) {
+            const station = stations.find(s => s.id === id);
+            document.getElementById('intro-view').classList.add('hidden');
+            document.getElementById('detail-view').classList.remove('hidden');
             
-            // Logik für den externen Link im Modal-Footer
-            if (data.link) {
-                modalExternalLinkAnchor.href = data.link;
-                modalExternalLinkAnchor.classList.remove('hidden');
-                modalExternalLinkAnchor.innerHTML = `<i class="fa-solid fa-external-link-alt text-sm"></i> Mehr erfahren`;
-            } else {
-                 modalExternalLinkAnchor.classList.add('hidden');
-            }
-            
-            modal.classList.remove('hidden');
-        }
+            document.getElementById('detail-title').innerText = station.title;
+            document.getElementById('detail-content').innerHTML = station.content;
 
-        window.closeModal = function() { 
-            // Link im Modal-Footer verbergen, um es für die nächste Station sauber zu halten
-            modalExternalLinkAnchor.classList.add('hidden');
-            modal.classList.add('hidden'); 
-        }
+            // Navigation Button Setup
+            document.getElementById('startNavigation').onclick = () => {
+                startRoute(station.coords);
+            };
 
-        const resizer = document.getElementById('resizer');
-        const sidebar = document.getElementById('sidebar');
-
-        resizer.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            resizer.classList.add('resizing');
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-            document.body.style.cursor = 'col-resize';
-            document.body.style.userSelect = 'none';
-        });
-
-        function handleMouseMove(e) {
-            const newWidth = window.innerWidth - e.clientX;
-            if (newWidth > 250 && newWidth < 800) {
-                sidebar.style.width = newWidth + 'px';
-                map.invalidateSize();
+            // Sidebar auf Mobile nach Klick einklappen (optional)
+            if (window.innerWidth < 768) {
+                // toggleSidebarVisibility(); // Falls gewünscht
             }
         }
 
-        function handleMouseUp() {
-            resizer.classList.remove('resizing');
-            document.body.style.cursor = '';
-            document.body.style.userSelect = '';
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 3000);
         }
 
-        window.userMarker = null;
-        window.locateUser = function() {
-            if (!navigator.geolocation) { showToast("Geolocation nicht verfügbar", 5000); return; }
-            navigator.geolocation.getCurrentPosition((pos) => {
-                const lat = pos.coords.latitude;
-                const lng = pos.coords.longitude;
-                if (window.userMarker) map.removeLayer(window.userMarker);
-                const gpsIcon = L.divIcon({ className: 'gps-wrapper', html: '<div class="gps-marker"></div>', iconSize: [26, 26], iconAnchor: [13, 13] });
-                window.userMarker = L.marker([lat, lng], {icon: gpsIcon}).addTo(map);
-                map.flyTo([lat, lng], 16);
-                showToast("Standort aktualisiert.", 2000);
-            }, (err) => { showToast("Fehler: " + err.message, 5000); });
+        // --- NAVIGATION & GPS ---
+
+        function startRoute(destCoords) {
+            if (!userLocation) {
+                showToast("Bitte aktivieren Sie erst Ihren Standort (Button unten rechts).");
+                return;
+            }
+
+            if (routingControl) {
+                map.removeControl(routingControl);
+            }
+
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(userLocation.lat, userLocation.lng),
+                    L.latLng(destCoords[0], destCoords[1])
+                ],
+                routeWhileDragging: true,
+                language: 'de',
+                createMarker: function() { return null; }, // Verhindert doppelte Marker
+                lineOptions: {
+                    styles: [{ color: '#a67c00', opacity: 0.8, weight: 6 }]
+                }
+            }).addTo(map);
+
+            showToast("Route berechnet. Folgen Sie der Linie.");
+            document.body.classList.add('active-route');
         }
+
+        // Standort finden
+        document.getElementById('locateMe').onclick = () => {
+            showToast("Suche Standort...");
+            
+            if (!navigator.geolocation) {
+                showToast("Geolocation wird nicht unterstützt.");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition((position) => {
+                const { latitude, longitude } = position.coords;
+                userLocation = { lat: latitude, lng: longitude };
+
+                if (userMarker) {
+                    userMarker.setLatLng([latitude, longitude]);
+                } else {
+                    userMarker = L.circleMarker([latitude, longitude], {
+                        radius: 8,
+                        fillColor: "#3b82f6",
+                        color: "#fff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).addTo(map);
+                }
+
+                map.flyTo([latitude, longitude], 16);
+                showToast("Standort gefunden.");
+            }, () => {
+                showToast("Zugriff auf Standort verweigert.");
+            });
+        };
+
+        // --- UI EVENTS ---
+
+        document.getElementById('backToList').onclick = () => {
+            document.getElementById('intro-view').classList.remove('hidden');
+            document.getElementById('detail-view').classList.add('hidden');
+            if (routingControl) {
+                map.removeControl(routingControl);
+                document.body.classList.remove('active-route');
+            }
+        };
+
+        document.getElementById('toggleSidebar').onclick = toggleSidebarVisibility;
+
+        function toggleSidebarVisibility() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        // Initialisierung
+        window.onload = initApp;
+
     </script>
 </body>
 </html>
