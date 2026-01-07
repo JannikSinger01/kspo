@@ -437,7 +437,7 @@
             <div class="p-6">
                 <div id="intro-view">
                     <h2 class="text-2xl mb-4 border-b border-gray-200 pb-2 font-serif">Stationen der Tour</h2>
-                    <p class="text-sm text-gray-600 mb-6">Wählen Sie einen Ort, um mehr über koloniale Verflechtungen zu erfahren.</p>
+                    <p class="text-sm text-gray-600 mb-6">Wählen Sie einen Ort, um mehr über koloniale Verflechtungen zu erfahren. <br><span class="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded inline-block mt-2">Korrektur-Modus aktiv: Marker verschiebbar!</span></p>
                     <div id="station-list" class="space-y-4"></div>
                 </div>
             </div>
@@ -626,7 +626,7 @@
             { 
                 id: 7, 
                 title: "Station VII: Kolonialläden", 
-                coords: [52.2735, 8.0510], 
+                coords: [52.27455, 8.04694], 
                 short: "Handel am Neumarkt.", 
                 image: "images/station7.jpg",
                 imageCopyright: "",
@@ -804,9 +804,20 @@
                         popupAnchor: [0, -20]
                     });
 
-                    const marker = L.marker(station.coords, { icon: icon, draggable: false }).addTo(map);
+                    const marker = L.marker(station.coords, { icon: icon, draggable: true }).addTo(map);
                     
                     marker.on('click', () => showDetail(station.id));
+
+                    marker.on('dragend', function(event) {
+                        const position = marker.getLatLng();
+                        marker.bindPopup(`
+                            <div class="text-center">
+                                <strong class="text-red-600">Neue Koordinaten:</strong><br>
+                                <input type="text" value="[${position.lat.toFixed(5)}, ${position.lng.toFixed(5)}]" class="border p-1 text-xs w-full mt-1 bg-gray-100" readonly onclick="this.select();">
+                                <p class="text-[10px] text-gray-500 mt-1">Kopieren und in den Code einfügen.</p>
+                            </div>
+                        `).openPopup();
+                    });
                 }
 
                 // LIST CARD LOGIC: Für ALLE Stationen (inkl. 0)
@@ -1033,7 +1044,7 @@
                     profile: 'foot' // Explizit Fußgänger-Profil
                 }),
                 lineOptions: { 
-                    styles: [{ color: '#a67c00', opacity: 0.8, weight: 6 }],
+                    styles: [{ color: '#d60000', opacity: 0.8, weight: 6 }],
                     extendToWaypoints: true,
                     missingRouteTolerance: 10
                 },
