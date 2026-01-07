@@ -158,7 +158,7 @@
             max-width: 650px;
             max-height: 85vh;
             overflow-y: auto;
-            padding: 0; /* Padding innen regeln */
+            padding: 0; 
             border-radius: 8px;
             border: 1px solid var(--accent-gold);
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
@@ -169,20 +169,57 @@
         .modal-overlay.active .modal-content {
             transform: scale(1);
         }
+
+        /* SPEZIALSTYLES FÜR STATION MODAL (Verschiebbar) */
+        #station-overlay {
+            background: none !important; /* Kein dunkler Hintergrund */
+            backdrop-filter: none !important;
+            pointer-events: none; /* Klicks gehen durch den leeren Bereich durch */
+        }
+        
+        #station-overlay .modal-content {
+            pointer-events: auto; /* Box selbst ist klickbar */
+            position: absolute; /* Wichtig für Drag & Drop */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Startzentrierung */
+            margin: 0;
+            /* Der gewünschte dünne Rahmen + Schatten */
+            box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--accent-gold), 0 15px 40px rgba(0,0,0,0.4);
+            border: none;
+        }
+
+        .modal-drag-handle {
+            height: 32px;
+            background: #fdfcf9;
+            border-bottom: 1px solid #e5e5e5;
+            cursor: move;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px 8px 0 0;
+            color: #ccc;
+        }
+        .modal-drag-handle:hover {
+            background: #f4f1ea;
+            color: var(--accent-gold);
+        }
         
         .modal-close-btn {
             position: absolute;
-            top: 15px; 
-            right: 15px;
+            top: 5px; 
+            right: 10px;
             background: rgba(255,255,255,0.8);
             border-radius: 50%;
-            padding: 5px;
-            z-index: 10;
+            padding: 4px;
+            z-index: 20;
             cursor: pointer;
             transition: background 0.2s;
+            color: #555;
         }
         .modal-close-btn:hover {
             background: white;
+            color: #000;
         }
 
         /* Arrival Prompt Styling */
@@ -251,10 +288,10 @@
 </head>
 <body>
 
-    <!-- LITERATUR MODAL -->
+    <!-- LITERATUR MODAL (Bleibt Standard) -->
     <div id="lit-overlay" class="modal-overlay">
-        <div class="modal-content p-8">
-            <button id="closeLit" class="modal-close-btn">
+        <div class="modal-content p-8 relative">
+            <button id="closeLit" class="modal-close-btn" style="top: 15px; right: 15px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             
@@ -262,26 +299,26 @@
             
             <div class="space-y-6 text-sm text-gray-700 font-light leading-relaxed">
                 <p class="italic text-xs text-gray-500 mb-4">Verwendete Literatur für dieses Projekt.</p>
-                
+                <!-- Inhalt gekürzt, bleibt gleich -->
                 <div class="pl-4 border-l-2 border-gray-300">
                     <p>Heyden, Ulrich van der; Zeller, Joachim (Hrsg.). Kolonialismus hierzulande. 2007. Erfurt. Sutton Verlag.</p>
                 </div>
-                <div class="pl-4 border-l-2 border-gray-300">
+                 <div class="pl-4 border-l-2 border-gray-300">
                     <p>Hoffmeyer, Ludwig. Chronik der Stadt Osnabrück. 1982. Vierte Auflage. Osnabrück. Druck und Verlag Meinders&Elstermann. S. 96ff.</p>
                 </div>
-                <div class="pl-4 border-l-2 border-gray-300">
+                 <div class="pl-4 border-l-2 border-gray-300">
                     <p>Ismard, Paulin (Hrsg.). Welten der Sklaverei. 2023. Berlin. Verlagshaus Jacoby&Stuart.</p>
                 </div>
-                <div class="pl-4 border-l-2 border-gray-300">
+                 <div class="pl-4 border-l-2 border-gray-300">
                     <p>Kühling, Karl. Die Juden in Osnabrück. 1983. Osnabrück. T.H. Wenner Verlag.</p>
                 </div>
-                <div class="pl-4 border-l-2 border-gray-300">
+                 <div class="pl-4 border-l-2 border-gray-300">
                     <p>Schipmann, Johannes Ludwig. Osnabrück und die Hanse. 2006. Bramsche. Rasch Verlag. S. 69.</p>
                 </div>
-                <div class="pl-4 border-l-2 border-gray-300">
+                 <div class="pl-4 border-l-2 border-gray-300">
                     <p>Wagner, Gisela. Osnabrück als Stadt der Hanse. 1980. Osnabrück. Selbstverlag des Vereins für Geschichte und Landeskunde.</p>
                 </div>
-                <div class="pl-4 border-l-2 border-gray-300">
+                 <div class="pl-4 border-l-2 border-gray-300">
                     <p>Weipert, Matthias; Groth, Daniel; Fenske, Uta (Hrsg.). Grenzgang. Grenzgängerinnen. Grenzgänger. 2017. Mörlenbach. Röhrig Universitätsverlag.</p>
                 </div>
                 
@@ -292,19 +329,21 @@
         </div>
     </div>
 
-    <!-- STATION DETAIL MODAL -->
+    <!-- STATION DETAIL MODAL (DRAGGABLE) -->
     <div id="station-overlay" class="modal-overlay">
-        <div class="modal-content">
+        <div id="station-modal-content" class="modal-content">
+            <!-- DRAG HANDLE -->
+            <div id="station-drag-handle" class="modal-drag-handle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            </div>
+
             <button id="closeStation" class="modal-close-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             
             <!-- Bild-Container -->
             <div id="modal-image-container" class="w-full bg-[#e5e5e5] relative flex justify-center items-center min-h-[200px] cursor-zoom-in group" title="Klicken für Vollbild">
                 <!-- Bild kommt hier rein -->
-                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all flex items-center justify-center pointer-events-none">
-                    <svg class="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
-                </div>
             </div>
             
             <!-- Bildnachweis / Copyright -->
@@ -325,13 +364,13 @@
                 <!-- Footer Navigation im Modal -->
                 <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col gap-3">
                     
-                    <!-- Next Station Button (wird dynamisch befüllt) -->
+                    <!-- Next Station Button -->
                     <button id="modal-next-btn" class="w-full bg-[#a67c00] text-white py-3 rounded-lg flex justify-center items-center hover:bg-[#856300] transition group font-bold">
                         <span>Zur nächsten Station</span>
                         <svg class="ml-2 group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </button>
 
-                    <!-- Start Navigation to THIS station (falls man noch nicht da ist) -->
+                    <!-- Start Navigation to THIS station -->
                     <button id="modal-navigate-btn" class="w-full bg-[#fdfcf9] border border-gray-300 text-charcoal py-2 rounded-lg flex justify-center items-center hover:bg-gray-50 transition text-sm">
                         <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
                         Navigation hierher starten
@@ -492,6 +531,64 @@
     </div>
 
     <script>
+        // DRAG FUNKTION (Verschiebbarkeit)
+        function makeDraggable(elmnt) {
+            var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            if (document.getElementById("station-drag-handle")) {
+                // If present, the header is where you move the DIV from:
+                document.getElementById("station-drag-handle").onmousedown = dragMouseDown;
+            } else {
+                // Otherwise, move the DIV from anywhere inside the DIV:
+                elmnt.onmousedown = dragMouseDown;
+            }
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // Get the mouse cursor position at startup:
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                
+                // Wichtig: Beim ersten Drag entfernen wir den Transform, um Sprünge zu vermeiden
+                // und setzen fixe Top/Left Werte
+                const style = window.getComputedStyle(elmnt);
+                const matrix = new WebKitCSSMatrix(style.transform);
+                
+                // Falls noch zentriert durch transform, rechnen wir das um
+                if(style.transform !== 'none') {
+                   // Das Element ist bereits positioniert durch CSS Top 50% Left 50%
+                   // Wir lassen es dort, aber entfernen den Transform und setzen Margins um es zu halten
+                   // Einfacher: Wir nutzen einfach offsetTop/Left
+                   elmnt.style.left = elmnt.offsetLeft + "px";
+                   elmnt.style.top = elmnt.offsetTop + "px";
+                   elmnt.style.transform = "none"; 
+                }
+
+                document.onmouseup = closeDragElement;
+                // Call a function whenever the cursor moves:
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // Calculate the new cursor position:
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // Set the element's new position:
+                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                // Stop moving when mouse button is released:
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
         const stations = [
             {
                 id: 0,
@@ -780,11 +877,11 @@
                 setTimeout(() => { lastTriggeredStationId = null; }, 60000); 
             };
 
-            document.querySelectorAll('.modal-overlay').forEach(overlay => {
-                overlay.addEventListener('click', function(e) {
-                    if(e.target === this) this.classList.remove('active');
-                });
+            // Nur Lit Overlay soll bei Klick außen schließen
+            document.getElementById('lit-overlay').addEventListener('click', function(e) {
+                if(e.target === this) this.classList.remove('active');
             });
+            // Station Overlay nicht, damit man die Karte bedienen kann. Nur X Button schließt.
 
             document.getElementById('closeIntro').onclick = () => {
                 document.getElementById('intro-overlay').classList.add('fade-out');
@@ -820,6 +917,9 @@
                 };
                 listContainer.appendChild(card);
             });
+
+            // Initialisiere Drag Funktion für das Station Modal
+            makeDraggable(document.getElementById("station-modal-content"));
         }
 
         // Hilfsfunktion für Fullscreen
@@ -846,8 +946,6 @@
                 overlayDiv.innerHTML = `<svg class="text-white opacity-0 transition-opacity drop-shadow-md" style="opacity: 0;" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>`;
                 
                 // Hover effect logic needed since innerHTML rebuilds
-                // Instead of complex JS, we rely on the CSS group-hover in the static HTML structure 
-                // BUT wait, we just overwrote innerHTML. Let's fix the structure.
                 
                 imgContainer.innerHTML = `
                     <div class="relative group cursor-zoom-in" onclick="openFullscreen('${station.image}')">
@@ -931,7 +1029,12 @@
                 startRoute(station.coords);
             };
 
-            // Show Modal
+            // Show Modal - Reset Position to center when opening new
+            const modalContent = document.getElementById("station-modal-content");
+            modalContent.style.top = "50%";
+            modalContent.style.left = "50%";
+            modalContent.style.transform = "translate(-50%, -50%)";
+
             document.getElementById('station-overlay').classList.add('active');
         }
 
