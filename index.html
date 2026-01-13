@@ -189,6 +189,28 @@
             border: none;
         }
 
+        /* --- STYLES FÜR BILDER IM FLIESSTEXT --- */
+        #modal-content-text img {
+            margin: 1.5rem 0;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e5e5e5;
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        #modal-content-text figure {
+            margin: 2rem 0;
+        }
+        #modal-content-text figcaption {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+            margin-top: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+        }
+
         .modal-drag-handle {
             height: 32px;
             background: #fdfcf9;
@@ -299,7 +321,12 @@
             
             <div class="space-y-6 text-sm text-gray-700 font-light leading-relaxed">
                 <p class="italic text-xs text-gray-500 mb-4">Verwendete Literatur für dieses Projekt.</p>
-                <!-- Inhalt gekürzt, bleibt gleich -->
+                
+                <!-- NEU EINGEFÜGT: Gröpl -->
+                <div class="pl-4 border-l-2 border-gray-300">
+                    <p>Gröpl, Myriam. Repräsentationen des Anderen – Museen und Völkerschauen. URL: https://geschichtsbuch.hamburg.de/epochen/kolonialismus/577-2/ [zuletzt aufgerufen am 13.01.2026].</p>
+                </div>
+
                 <div class="pl-4 border-l-2 border-gray-300">
                     <p>Heyden, Ulrich van der; Zeller, Joachim (Hrsg.). Kolonialismus hierzulande. 2007. Erfurt. Sutton Verlag.</p>
                 </div>
@@ -341,7 +368,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             
-            <!-- Bild-Container -->
+            <!-- Bild-Container (Hauptbild) -->
             <div id="modal-image-container" class="w-full bg-[#e5e5e5] relative flex justify-center items-center min-h-[200px] cursor-zoom-in group" title="Klicken für Vollbild">
                 <!-- Bild kommt hier rein -->
             </div>
@@ -694,10 +721,49 @@
                 
                 content: `
                     <h3 class="font-bold text-lg mb-2">Ort des Geschehens</h3>
-                    <p>[Platzhalter: Wo genau fanden diese Veranstaltungen statt?]</p>
+                    <p>Hier an diesem Ort fanden im späten 19. und frühen 20. Jahrhundert Veranstaltungen statt, die heute als "Völkerschauen" bekannt sind. Menschen aus fernen Regionen wurden hier wie Exponate zur Schau gestellt.</p>
                     
+                    <!-- BILD 1 -->
+                    <figure class="my-8 p-2 bg-gray-50 rounded border border-gray-100">
+                        <!-- HIER DEIN BILD EINFÜGEN: Ersetze den src-Link -->
+                        <img src="https://placehold.co/600x400/e2e8f0/475569?text=Platzhalter+Bild+1+(Grafik)" alt="Historische Grafik" class="mb-2 w-full h-auto rounded shadow-sm" />
+                        <figcaption>
+                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold border-b border-gray-200 pb-1 mb-1">Quelle: [Name des Urhebers / Archiv]</div>
+                            <div class="text-sm italic text-gray-700">Bildunterschrift 1: Beschreiben Sie hier, was auf dem ersten Bild zu sehen ist und ordnen Sie es historisch ein.</div>
+                        </figcaption>
+                    </figure>
+
                     <h3 class="font-bold text-lg mt-4 mb-2">Hintergrund der 'Völkerschauen'</h3>
-                    <p>[Platzhalter: Erklären Sie das Phänomen der Völkerschauen und ihre rassistische Dimension im Kaiserreich.]</p>
+                    <p>Diese Schauen dienten der Unterhaltung, transportierten aber gleichzeitig ein rassistisches Weltbild. Sie suggerierten eine Überlegenheit der europäischen Zuschauer gegenüber den "exotischen" Darstellern.</p>
+
+                    <!-- BILD 2 -->
+                    <figure class="my-8 p-2 bg-gray-50 rounded border border-gray-100">
+                        <img src="https://placehold.co/600x400/e2e8f0/475569?text=Platzhalter+Bild+2" alt="Platzhalter 2" class="mb-2 w-full h-auto rounded shadow-sm" />
+                        <figcaption>
+                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold border-b border-gray-200 pb-1 mb-1">Quelle: [Name des Urhebers / Archiv]</div>
+                            <div class="text-sm italic text-gray-700">Bildunterschrift 2: Kontextualisierung für das zweite Bild.</div>
+                        </figcaption>
+                    </figure>
+
+                    <p>Oft wurden die Menschen in konstruierten "Dörfern" präsentiert, die wenig mit ihrer tatsächlichen Lebensrealität zu tun hatten, sondern europäische Klischees bedienten.</p>
+
+                    <!-- BILD 3 -->
+                    <figure class="my-8 p-2 bg-gray-50 rounded border border-gray-100">
+                        <img src="https://placehold.co/600x400/e2e8f0/475569?text=Platzhalter+Bild+3" alt="Platzhalter 3" class="mb-2 w-full h-auto rounded shadow-sm" />
+                        <figcaption>
+                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold border-b border-gray-200 pb-1 mb-1">Quelle: [Name des Urhebers / Archiv]</div>
+                            <div class="text-sm italic text-gray-700">Bildunterschrift 3: Weitere Details oder historische Einordnung.</div>
+                        </figcaption>
+                    </figure>
+
+                    <!-- BILD 4 -->
+                    <figure class="my-8 p-2 bg-gray-50 rounded border border-gray-100">
+                        <img src="https://placehold.co/600x400/e2e8f0/475569?text=Platzhalter+Bild+4" alt="Platzhalter 4" class="mb-2 w-full h-auto rounded shadow-sm" />
+                        <figcaption>
+                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold border-b border-gray-200 pb-1 mb-1">Quelle: [Name des Urhebers / Archiv]</div>
+                            <div class="text-sm italic text-gray-700">Bildunterschrift 4: Abschlussbild oder heutige Perspektive.</div>
+                        </figcaption>
+                    </figure>
                 `,
                 audio: "audio/station5.mp3", 
                 model3d: "" 
