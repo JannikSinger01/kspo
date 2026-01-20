@@ -1,0 +1,10 @@
+[build]
+  # Da es eine reine HTML-Seite ist, ist kein Build-Command nötig.
+  command = "" 
+  # Das Verzeichnis, das veröffentlicht werden soll (Root-Verzeichnis).
+  publish = "."
+
+[build.environment]
+  # Wir erzwingen eine existierende, stabile Node.js Version (LTS).
+  # Dies überschreibt die fehlerhafte v22.22.0 Einstellung.
+  NODE_VERSION = "20"
