@@ -415,8 +415,40 @@
                         <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
                         Navigation hierher starten
                     </button>
+
+                    <!-- NEU: Rundgang beenden Button -->
+                    <button id="modal-end-btn" class="w-full bg-white border border-red-200 text-red-900/70 py-2 rounded-lg flex justify-center items-center hover:bg-red-50 hover:text-red-800 transition text-sm mt-2">
+                        <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><rect x="9" y="9" width="6" height="6"></rect></svg>
+                        Rundgang hier beenden
+                    </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- NEU: END TOUR OVERLAY (Platzhalter) -->
+    <div id="end-tour-overlay" class="modal-overlay">
+        <div class="modal-content p-8 relative max-w-md text-center">
+            <button id="closeEndTour" class="modal-close-btn" style="top: 15px; right: 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            
+            <div class="flex justify-center mb-6">
+                <div class="bg-[#a67c00] text-white p-4 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-serif text-[#2d3436] mb-4">Vielen Dank für Ihre Teilnahme</h2>
+            
+            <div class="text-gray-600 space-y-4 mb-8">
+                <p class="italic">[Platzhalter für Ihren Abschlusstext: Hier können Sie ein Fazit ziehen, auf weiterführende Projekte hinweisen oder Danksagungen platzieren.]</p>
+                <p class="text-sm">Wir hoffen, Sie konnten einen neuen Blick auf die Geschichte Osnabrücks gewinnen.</p>
+            </div>
+
+            <button id="confirmEndTour" class="w-full bg-[#2d3436] text-white py-3 rounded-lg hover:bg-[#a67c00] transition font-bold">
+                Zurück zur Startseite
+            </button>
         </div>
     </div>
 
@@ -1011,6 +1043,18 @@
             
             document.getElementById('closeStation').onclick = () => document.getElementById('station-overlay').classList.remove('active');
 
+            // NEU: End Tour Logic
+            document.getElementById('closeEndTour').onclick = () => document.getElementById('end-tour-overlay').classList.remove('active');
+            
+            document.getElementById('confirmEndTour').onclick = () => {
+                document.getElementById('end-tour-overlay').classList.remove('active');
+                document.getElementById('station-overlay').classList.remove('active');
+                // Optional: Zurücksetzen auf Startansicht oder Intro
+                map.flyTo([52.277, 8.042], 15);
+                document.getElementById('intro-overlay').classList.remove('fade-out'); // Intro wieder zeigen
+                setTimeout(() => document.getElementById('intro-overlay').style.visibility = 'visible', 0); // Fix für visibility transition
+            };
+
             // FULLSCREEN LOGIC
             document.getElementById('closeFullscreen').onclick = () => {
                 document.getElementById('fullscreen-overlay').classList.add('hidden');
@@ -1153,7 +1197,13 @@
 
             // NAVIGATION BUTTONS LOGIC
             const currentIndex = stations.findIndex(s => s.id === id);
-            const nextStation = stations[currentIndex + 1];
+            let nextStation = stations[currentIndex + 1];
+
+            // NEU: Loop-Logik (Wenn am Ende, springe zu Station 1, nicht 0/Intro)
+            if (!nextStation && currentIndex === stations.length - 1) {
+                nextStation = stations.find(s => s.id === 1);
+            }
+            
             const nextBtn = document.getElementById('modal-next-btn');
             
             if (nextStation) {
@@ -1165,6 +1215,7 @@
                 };
                 nextBtn.classList.remove('hidden');
             } else {
+                // Fallback, falls Loop Logik versagt oder Station 0
                 nextBtn.innerHTML = `<span>Rundgang beendet</span>`;
                 nextBtn.onclick = () => document.getElementById('station-overlay').classList.remove('active');
             }
@@ -1173,6 +1224,13 @@
             document.getElementById('modal-navigate-btn').onclick = () => {
                 document.getElementById('station-overlay').classList.remove('active');
                 startRoute(station.coords);
+            };
+
+            // NEU: End Tour Button Event
+            document.getElementById('modal-end-btn').onclick = () => {
+                // Station Overlay schließen (optional, kann auch offen bleiben)
+                // document.getElementById('station-overlay').classList.remove('active');
+                document.getElementById('end-tour-overlay').classList.add('active');
             };
 
             // Show Modal - Reset Position to center when opening new
