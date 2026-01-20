@@ -227,21 +227,27 @@
             color: var(--accent-gold);
         }
         
+        /* UPDATED: Schließen-Button deutlicher gemacht */
         .modal-close-btn {
             position: absolute;
-            top: 5px; 
+            top: 10px; 
             right: 10px;
-            background: rgba(255,255,255,0.8);
+            background: white; /* Weißer Hintergrund für bessere Sichtbarkeit */
+            border: 1px solid #e5e5e5; /* Leichter Rand */
             border-radius: 50%;
-            padding: 4px;
+            padding: 8px; /* Größerer Klickbereich */
             z-index: 20;
             cursor: pointer;
-            transition: background 0.2s;
-            color: #555;
+            transition: all 0.2s ease;
+            color: #2d3436;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Leichter Schatten */
         }
         .modal-close-btn:hover {
-            background: white;
-            color: #000;
+            background: var(--accent-gold); /* Goldener Hintergrund bei Hover */
+            color: white;
+            transform: rotate(90deg); /* Spielerische Rotation */
+            border-color: var(--accent-gold);
+            box-shadow: 0 4px 8px rgba(166, 124, 0, 0.3);
         }
 
         /* Arrival Prompt Styling */
@@ -313,7 +319,7 @@
     <!-- LITERATUR MODAL (Bleibt Standard) -->
     <div id="lit-overlay" class="modal-overlay">
         <div class="modal-content p-8 relative">
-            <button id="closeLit" class="modal-close-btn" style="top: 15px; right: 15px;">
+            <button id="closeLit" class="modal-close-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             
@@ -429,7 +435,7 @@
     <!-- NEU: END TOUR OVERLAY (Platzhalter) -->
     <div id="end-tour-overlay" class="modal-overlay">
         <div class="modal-content p-8 relative max-w-md text-center">
-            <button id="closeEndTour" class="modal-close-btn" style="top: 15px; right: 15px;">
+            <button id="closeEndTour" class="modal-close-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             
@@ -621,20 +627,15 @@
                 pos3 = e.clientX;
                 pos4 = e.clientY;
                 
-                // Wichtig: Beim ersten Drag entfernen wir den Transform, um Sprünge zu vermeiden
-                // und setzen fixe Top/Left Werte
-                const style = window.getComputedStyle(elmnt);
-                const matrix = new WebKitCSSMatrix(style.transform);
+                // FIX: Get precise current position to avoid jumping
+                const rect = elmnt.getBoundingClientRect();
                 
-                // Falls noch zentriert durch transform, rechnen wir das um
-                if(style.transform !== 'none') {
-                   // Das Element ist bereits positioniert durch CSS Top 50% Left 50%
-                   // Wir lassen es dort, aber entfernen den Transform und setzen Margins um es zu halten
-                   // Einfacher: Wir nutzen einfach offsetTop/Left
-                   elmnt.style.left = elmnt.offsetLeft + "px";
-                   elmnt.style.top = elmnt.offsetTop + "px";
-                   elmnt.style.transform = "none"; 
-                }
+                // Freeze the element at its current visual position using fixed pixels
+                // This replaces the "50% / -50%" centering logic with absolute coordinates
+                elmnt.style.left = rect.left + "px";
+                elmnt.style.top = rect.top + "px";
+                elmnt.style.transform = "none"; 
+                elmnt.style.margin = "0";
 
                 document.onmouseup = closeDragElement;
                 // Call a function whenever the cursor moves:
