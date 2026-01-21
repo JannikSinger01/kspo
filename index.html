@@ -227,25 +227,25 @@
             color: var(--accent-gold);
         }
         
-        /* UPDATED: Schließen-Button deutlicher gemacht */
+        /* Schließen-Button */
         .modal-close-btn {
             position: absolute;
             top: 10px; 
             right: 10px;
-            background: white; /* Weißer Hintergrund für bessere Sichtbarkeit */
-            border: 1px solid #e5e5e5; /* Leichter Rand */
+            background: white; 
+            border: 1px solid #e5e5e5; 
             border-radius: 50%;
-            padding: 8px; /* Größerer Klickbereich */
+            padding: 8px; 
             z-index: 20;
             cursor: pointer;
             transition: all 0.2s ease;
             color: #2d3436;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Leichter Schatten */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
         }
         .modal-close-btn:hover {
-            background: var(--accent-gold); /* Goldener Hintergrund bei Hover */
+            background: var(--accent-gold); 
             color: white;
-            transform: rotate(90deg); /* Spielerische Rotation */
+            transform: rotate(90deg); 
             border-color: var(--accent-gold);
             box-shadow: 0 4px 8px rgba(166, 124, 0, 0.3);
         }
@@ -292,7 +292,7 @@
             box-shadow: 0 6px 12px rgba(166, 124, 0, 0.3);
         }
 
-        /* Styling für Audio Player - Wird nun durch Custom UI ersetzt, aber Fallback bleibt */
+        /* Styling für Audio Player - Custom UI */
         audio::-webkit-media-controls-panel {
             background-color: #f4f1ea;
         }
@@ -730,15 +730,6 @@
                     
                     <p class="mb-4">1645 wird ein Mann, dessen Geburtsname uns noch heute verborgen bleibt, an der afrikanischen Westküste geboren. Mit ca. drei Jahren wird er, während er am Strand spielt, von holländischen Soldaten gefangen genommen und entführt. Sie verkaufen ihn in dem heutigen Guinea an einen deutschen Kaufmann weiter. Dieser bringt den mittlerweile elfjährigen Jungen nach Hamburg, wo er dort vom damaligen Bürgermeister Osnabrücks, Gerhard Schepeler, gekauft wurde. Hamburg galt zu dieser Zeit als einer der größten Handelsplätze für Sklaven in der Region. Warum Schepeler den Jungen kaufte, ist bis jetzt nicht bekannt. Sicher ist, dass er eine beträchtliche Summe an Geld zahlen musste, da damals Sklaven als eine Art Statussymbol für Wohlstand in der Gesellschaft standen. Schepeler strebt an, dass sein Sklave „bekehrt“ werden muss und dementsprechend getauft werden solle.</p>
 
-                    <!-- BILD PLATZHALTER TAUFE -->
-                    <figure class="my-8 p-2 bg-gray-50 rounded border border-gray-100">
-                        <img src="https://placehold.co/600x400/e2e8f0/475569?text=Taufe+1661+Dokument" alt="Historisches Dokument zur Taufe" class="mb-2 w-full h-auto rounded shadow-sm" />
-                        <figcaption>
-                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold border-b border-gray-200 pb-1 mb-1">Quelle: Archiv</div>
-                            <div class="text-sm italic text-gray-700">Dokumentation zur Taufe in der Marienkirche.</div>
-                        </figcaption>
-                    </figure>
-
                     <p class="mb-4">Somit erhielt der Junge am 18.05.1661 die Taufe in der Marienkirche. Es ist ein besonderes Ereignis gewesen, dass ein aus Afrika stammender Mensch in Osnabrück getauft wird, auch weil es der erste Beleg eines Sklaven in Osnabrück ist. Schepeler beauftragte auch den Druck eines Buches, welches von der Taufe berichten solle, da die „bekehrung eines Mohren […] an diesem Orte wol etwas newes, und bey Menschen=dencken in dieser Stadt nicht geschehen noch gesehen“ wurde.</p>
                     
                     <p class="mb-4">Bei der Taufe gab man dem Jungen den christlichen Namen Christian Gerhard Schepeler. Christian ist eine Anspielung auf Christus als ein Symbol seiner „Bekehrung“, Gerhard und Schepeler stammen von seinem „Vater“, Gerhard Schepeler. Offiziell ist der Junge, dessen eigentlicher Name wohl für immer verborgen bleiben wird, aus dem Sklavenstand entlassen und frei, da ein Christ kein Sklave sein kann. Man ist sich jedoch bis heute nicht sicher, wie es Schepeler (und damit auch Personen, die sein Schicksal teilen) nach der Taufe erging. Sie wird seine Situation wohl verbessert haben, jedoch ist er als ehemaliger Sklave immer noch ein Außenseiter in der Gesellschaft.</p>
@@ -749,8 +740,8 @@
                 model3d: "" 
             },
             { 
-                id: 4, 
-                title: "Station IV: Museum und Kolonialismus", 
+                id: 3, 
+                title: "Station III: Museum und Kolonialismus", 
                 coords: [52.27554, 8.03890], 
                 short: "Museumsquartier.", 
                 image: "images/museum.jpg",
@@ -811,15 +802,15 @@
                 model3d: "" 
             },
             { 
-                id: 5, 
-                title: "Station V: Völkerschau", 
+                id: 4, 
+                title: "Station IV: Völkerschau", 
                 coords: [52.27084, 8.04301], 
                 short: "Völkerschauen in Osnabrück.", 
                 image: "images/station5.jpg",
                 imageCopyright: "",
                 
                 content: `
-                    <p class="mb-4">Carl Hagenbeck war im 19. Jahrhundert einer der bekanntesten Tierhändler Deutschlands. Er schickte regelmäßig Expeditionen rund um den Globus, um Tiere für seine Präsentationen zu fangen. Am 11. März 1874 jedoch präsentierte Hagenbeck keine Tiere. Er veranstaltete in Hamburg die erste sogenannte „Völkerschau“, bei der er statt seiner Tiere aus Nordskandinavien stammende Personen zur Schau stellte. Die Menschen waren zunächst irritiert, da sie eigentlich Tiere erwarteten, jedoch schlug die Stimmung in schiere Begeisterung um.</p>
+                    <p class="mb-4">Sie stehen nun vor der „Osnabrückhalle“. Hier wird regelmäßig zu Events geladen, bei denen die Osnabrücker Stadtbevölkerung zusammenkommt – ob Uniball, Kabarett, Musicals oder die Osnabrücker Grünkohlmahlzeit. Die Ränge sind stets voll und beliebt. Solche Stadthallen gibt es in jeder Stadt, bei denen Personen durch das Land reisen und ihr Programm vortragen. Eine Person, die vor 150 Jahren in so einer Stadthalle hätte auftreten können, war Carl Hagenbeck.</p>
 
                     <!-- BILD 1 -->
                     <figure class="my-8 p-2 bg-gray-50 rounded border border-gray-100">
@@ -829,6 +820,8 @@
                             <div class="text-sm italic text-gray-700">Die erste Völkerschau 1874.</div>
                         </figcaption>
                     </figure>
+
+                    <p class="mb-4">Carl Hagenbeck war im 19. Jahrhundert einer der bekanntesten Tierhändler Deutschlands. Er schickte regelmäßig Expeditionen rund um den Globus, um Tiere für seine Präsentationen zu fangen. Am 11. März 1874 jedoch präsentierte Hagenbeck keine Tiere. Er veranstaltete in Hamburg die erste sogenannte „Völkerschau“, bei der er statt seiner Tiere aus Nordskandinavien stammende Personen zur Schau stellte. Die Menschen waren zunächst irritiert, da sie eigentlich Tiere erwarteten, jedoch schlug die Stimmung in schiere Begeisterung um.</p>
 
                     <p class="mb-4">Die „Menschenschau“ wurde zum Erfolg. Menschen strömten in Scharen zu Hagenbeck, der nun regelmäßig Menschen verschiedenster Herkunft präsentierte. Hagenbeck nahm die Menschen, die ähnlich wie die Expeditionen der Tiere rund um die Welt gesucht wurden, zu sich in den Zoo und präsentierte ihr „alltägliches Leben“ mit allen rassistischen Klischees, die zu dieser Zeit vorherrschten. Warum die Menschen sich von Hagenbeck überreden lassen haben, ist nicht bekannt. Man nimmt an, dass sie unter falschen Versprechungen zu Hagenbeck gelockt wurden.</p>
 
@@ -860,19 +853,65 @@
                 model3d: "" 
             },
             { 
-                id: 6, 
-                title: "Station VI: Die Erdteilallegorien", 
+                id: 5, 
+                title: "Station V: Die Erdteilallegorien", 
                 coords: [52.27107, 8.04422], 
                 short: "Symbolik im Schlossgarten.", 
                 image: "images/station6.jpg",
                 imageCopyright: "",
                 
                 content: `
-                    <h3 class="font-bold text-lg mb-2">Die Skulpturen</h3>
-                    <p>[Platzhalter: Beschreibung der vier Figuren im Schlossgarten.]</p>
+                    <p class="mb-4">Sie stehen nun im Schlossgarten. Er ist heute für viele Dreh- und Angelpunkt ihres Studiums – er liegt direkt neben einigen wichtigen Uni-Gebäuden und der Mensa. Außerdem bietet er im Sommer die Möglichkeit, an der frischen Luft und im grünen Gras zu lernen oder sich mit seinen Kommiliton*innen die Zeit zu verbringen.</p> 
                     
-                    <h3 class="font-bold text-lg mt-4 mb-2">Koloniale Ikonografie</h3>
-                    <p>[Platzhalter: Analyse der Darstellung von Afrika, Asien, Amerika und Europa. Welche Stereotype werden bedient?]</p>
+                    <p class="mb-4">Der Schlossgarten wird von vier Figuren vor dem Schloss gekrönt. Es handelt sich dabei um sogenannte Erdteilallegorien, eine Verkörperung unserer Kontinente. Sie stammen aus dem Jahr 1740 und stellen von links nach rechts Europa, Afrika, Amerika und Asien dar. Auf den ersten Blick mag man nicht direkt koloniale Überbleibsel oder rassistische Strukturen erkennen, doch der Schein trügt gewaltig. Sie verkörpern das kolonial-rassistische Denken in einer eher subtileren Art und Weise. Aber schauen wir uns die Figuren Schritt für Schritt an.</p>
+
+                    <!-- BILD 1: EUROPA -->
+                    <figure class="my-8 p-2 bg-gray-50 rounded border border-gray-100">
+                        <img src="https://placehold.co/600x400/e2e8f0/475569?text=Allegorie:+Europa" alt="Allegorie Europa" class="mb-2 w-full h-auto rounded shadow-sm" />
+                        <figcaption>
+                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold border-b border-gray-200 pb-1 mb-1">Quelle: Archiv</div>
+                            <div class="text-sm italic text-gray-700">Die erste Darstellung von links: Europa.</div>
+                        </figcaption>
+                    </figure>
+
+                    <p class="mb-4">Die erste Darstellung von links zeigt Europa. Sie ist die einzige Figur, die komplett bekleidet ist. Sie trägt eine römische Toga, ein Symbol für das alte Rom mit ebenfalls imperialistischen Ansprüchen. Gleichzeitig hält die Statue Herrschaftssymbole in Form eines Schildes und einer Krone in der Hand.</p>
+
+                    <!-- BILD 2: AFRIKA -->
+                    <figure class="my-8 p-2 bg-gray-50 rounded border border-gray-100">
+                        <img src="https://placehold.co/600x400/e2e8f0/475569?text=Allegorie:+Afrika" alt="Allegorie Afrika" class="mb-2 w-full h-auto rounded shadow-sm" />
+                        <figcaption>
+                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold border-b border-gray-200 pb-1 mb-1">Quelle: Archiv</div>
+                            <div class="text-sm italic text-gray-700">Die Darstellung Afrikas.</div>
+                        </figcaption>
+                    </figure>
+
+                    <p class="mb-4">Die weibliche Darstellung Afrikas sieht im Vergleich zu Europa ganz anders aus. Sie ist kaum bekleidet und weist stereotypische Gesichtsmerkmale auf. Das Ambivalent der vergleichsweise „starken“ Symbole in Form eines Schildes oder der Krone von Europa sind in der Darstellung Afrikas eher einfache Merkmale wie ein Armreif oder Haarschmuck. Der zu Boden liegende Löwe soll „das Wilde“ bzw. „animalische“ symbolisieren.</p>
+
+                    <!-- BILD 3: AMERIKA -->
+                    <figure class="my-8 p-2 bg-gray-50 rounded border border-gray-100">
+                        <img src="https://placehold.co/600x400/e2e8f0/475569?text=Allegorie:+Amerika" alt="Allegorie Amerika" class="mb-2 w-full h-auto rounded shadow-sm" />
+                        <figcaption>
+                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold border-b border-gray-200 pb-1 mb-1">Quelle: Archiv</div>
+                            <div class="text-sm italic text-gray-700">Die Darstellung Amerikas.</div>
+                        </figcaption>
+                    </figure>
+
+                    <p class="mb-4">Die Verkörperung Amerikas bedient ähnliche stereotypische und rassistische Merkmale. Der Kopf der Figur wird von Federschmuck geziert. Die Statue trägt zwar einen Federrock, wird aber dennoch sehr freizügig dargestellt. Der Aspekt der Wildnis findet sich auch hier in Form eines Bogens wieder. Zu ihren Füßen befinden sich ein Krokodil, ebenfalls ein Zeichen der Wildnis, und ein menschlicher Schädel. Dieser bedient die koloniale Vorstellung des angeblich in Amerika vorherrschenden Kannibalismus.</p>
+
+                    <!-- BILD 4: ASIEN -->
+                    <figure class="my-8 p-2 bg-gray-50 rounded border border-gray-100">
+                        <img src="https://placehold.co/600x400/e2e8f0/475569?text=Allegorie:+Asien" alt="Allegorie Asien" class="mb-2 w-full h-auto rounded shadow-sm" />
+                        <figcaption>
+                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold border-b border-gray-200 pb-1 mb-1">Quelle: Archiv</div>
+                            <div class="text-sm italic text-gray-700">Die Darstellung Asiens.</div>
+                        </figcaption>
+                    </figure>
+
+                    <p class="mb-4">Die asiatische Statue weist wieder mehr Bekleidung als die vorigen beiden Figuren auf. Sie suggeriert ebenfalls im Vergleich zu Afrika und Amerika ein „zivilisiertes“ Erscheinungsbild. Zu ihren Füßen befindet sich ein Turban und sie hält ein rauchendes Gefäß in der Hand, welches den Handel mit Asien symbolisiert. Güter aus Asien sind im 18. Jahrhundert in Europa sehr beliebt gewesen. Zwar zeigt die Figur einen gewissen „Grad an Zivilisation“ auf, ordnet sich dennoch Europa unter, da sie keine vergleichbaren Herrschersymbole aufweisen kann.</p>
+
+                    <p class="mb-4">Insgesamt kann man an den Erdteilallegorien die zeitgenössische Weltanschauung erkennen. Die Figuren stehen für einen „Entwicklungsstand“ der Kontinente. Während Afrika und Amerika, noch in der Wildnis lebend (Tiere am Boden, Bogen, Schädel), zivilisatorisch Europa deutlich unterlegen seien (kaum bekleidet), reiht sich Asien als „spiritueller und zivilisierter“ (große seidenartige Bekleidung, jedoch keine Herrscherinsignien) Kontinent ein. Lediglich Europa scheint in der Lage zu sein, Macht zu haben, auszuüben, durchzusetzen und schlussendlich sie auch zu erweitern.</p>
+                    
+                    <p class="mb-4 border-t border-gray-200 pt-4">Diese Figuren zeichnen ein längst veraltetes und rassistisches Weltbild. Sie stehen jedoch völlig unkommentiert an einem sehr frequentierten Platz im Herzen des akademischen Osnabrücks. Ohne genauere Betrachtung kann man nur schwer die stereotypische Darstellung der Kontinente erkennen und identifizieren (Australien galt hierbei noch nicht als eigener Kontinent, daher existiert davon auch keine Statue).</p>
                 `,
                 audio: "audio/station6.mp3", 
                 model3d: "erdteil_scan" 
